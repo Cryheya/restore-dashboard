@@ -88,6 +88,10 @@
   .pr{display:grid;grid-template-columns:24px 1fr 60px 46px 46px;align-items:center;gap:6px;padding:7px 15px;border-bottom:1px solid var(--border);transition:background .1s;}
   .pr:last-child{border-bottom:none;}
   .pr:hover{background:var(--surface2);}
+  .pr.is-perf{background:rgba(176,136,0,.05);}
+  .pr.is-perf:hover{background:rgba(176,136,0,.10);}
+  .pr.is-near{background:rgba(224,112,0,.03);}
+  .pr.is-near:hover{background:rgba(224,112,0,.08);}
   .prk{font-family:'Bebas Neue',sans-serif;font-size:15px;text-align:center;line-height:1;}
   .rg{color:var(--gold);} .rs{color:var(--silver);} .rb{color:var(--bronze);}
   .rn{color:var(--muted);font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;}
@@ -240,7 +244,7 @@ function esc(s){ return String(s).replace(/'/g,"\\'"); }
 // ── CHIPS ──
 function buildChips(g) {
   const c = CFG[g], st = STATE[g];
-  const stores = [...new Set(PERF[g].list.map(p=>p.м))].sort();
+  const stores = [...new Set(ALL_STAFF[g].map(p=>p.м))].sort();
   const chips = stores.map(s => {
     const sel = st.selStores.has(s);
     return `<span class="chip ${sel?'selected':''}"
@@ -254,30 +258,35 @@ function buildChips(g) {
   </div>`;
 }
 
-// ── PERF TABLE ──
+// ── ALL STAFF TABLE (in grade panel) ──
 function renderPerf(g) {
   const c = CFG[g], st = STATE[g];
-  let list = PERF[g].list.filter(p => {
+  let list = ALL_STAFF[g].filter(p => {
     const ms = st.selStores.size === 0 || st.selStores.has(p.м);
     const ss = !st.search || p.н.toLowerCase().includes(st.search.toLowerCase());
     return ms && ss;
   });
-  // always sorted by rank
   list = [...list].sort((a,b) => a.р - b.р);
 
-  const rows = list.length === 0
-    ? `<div class="no-results">Нет перформеров по выбранному фильтру</div>`
-    : list.map(p => `<div class="pr">
-        ${rk(p.р)}
-        <div><div class="pn">${p.н}</div><div class="ps">${p.м}</div></div>
-        <div class="pv"><span class="v" style="color:${c.col}">${p.о.toFixed(1)} млн</span><span class="l">Оборот</span></div>
-        <div class="pv"><span class="v">${p.с.toFixed(1)}%</span><span class="l">СБП</span></div>
-        <div class="pv"><span class="v">${p.а.toFixed(1)}%</span><span class="l">АТА</span></div>
-      </div>`).join('');
+  const perfCount = list.filter(p=>p.p).length;
+  const shown = list.length, totalCount = ALL_STAFF[g].length;
+  const countHtml = `<span class="result-count">Показано: ${shown} из ${totalCount} · перформеров: ${perfCount}</span>`;
 
-  const shown = list.length, total = PERF[g].list.length;
-  const countHtml = (shown < total || st.search)
-    ? `<span class="result-count">Показано: ${shown} из ${total}</span>` : '';
+  const rows = list.length === 0
+    ? `<div class="no-results">Нет сотрудников по выбранному фильтру</div>`
+    : list.map(p => {
+        const rowCls = p.p ? 'is-perf' : p.nm ? 'is-near' : '';
+        const badge = p.p
+          ? `<span class="badge-perf">★</span>`
+          : p.nm ? `<span class="badge-near">↑</span>` : '';
+        return `<div class="pr ${rowCls}" style="${p.p?'border-left:3px solid '+c.colHex+';padding-left:13px':''}">
+          ${rk(p.р)}
+          <div><div class="pn">${p.н} ${badge}</div><div class="ps">${p.м}</div></div>
+          <div class="pv"><span class="v" style="color:${c.col}">${p.о.toFixed(1)} млн</span><span class="l">Оборот</span></div>
+          <div class="pv"><span class="v" style="${p.с<40?'color:var(--c)':''}">${p.с.toFixed(1)}%</span><span class="l">СБП</span></div>
+          <div class="pv"><span class="v" style="${p.а<60?'color:var(--c)':''}">${p.а.toFixed(1)}%</span><span class="l">АТА</span></div>
+        </div>`;
+      }).join('');
 
   return `<div style="display:flex;align-items:center;gap:8px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);">
     <div class="search-wrap" style="flex:1">
@@ -331,19 +340,21 @@ function hexToRgb(hex) {
 
 // ── FULL PANEL BUILD (first time) ──
 function buildPanel(g) {
-  const c = CFG[g], {avg_rev,list:top} = PERF[g], total = TOTAL[g];
-  const avgS = (top.reduce((s,p)=>s+p.с,0)/top.length).toFixed(1);
-  const avgA = (top.reduce((s,p)=>s+p.а,0)/top.length).toFixed(1);
+  const c = CFG[g], {avg_rev} = PERF[g], total = TOTAL[g];
+  const staff = ALL_STAFF[g] || [];
+  const perfCount = staff.filter(p=>p.p).length;
+  const avgS = staff.length ? (staff.reduce((s,p)=>s+p.с,0)/staff.length).toFixed(1) : '—';
+  const avgA = staff.length ? (staff.reduce((s,p)=>s+p.а,0)/staff.length).toFixed(1) : '—';
   const storeNote = g==='b'?`топ-10 из ${total}`:`все ${total} магазина`;
 
   return `
-  <div class="ph"><div class="ph-title">ТОП ПЕРФОРМЕРЫ</div><span class="ph-tag ${c.tag}">ГРЕЙД ${LABEL[g]}</span></div>
-  <div class="ph-sub">${total} магазинов · порог оборота ${avg_rev} млн · Q1 2026</div>
+  <div class="ph"><div class="ph-title">СОТРУДНИКИ ГРЕЙДА</div><span class="ph-tag ${c.tag}">ГРЕЙД ${LABEL[g]}</span></div>
+  <div class="ph-sub">${total} магазинов · порог оборота ${avg_rev} млн · перформеры подсвечены</div>
   <div class="stats">
-    <div class="stat ${c.st}"><div class="sn ${c.cc}">${top.length}</div><div class="sl">Перформеров в грейде</div></div>
+    <div class="stat ${c.st}"><div class="sn ${c.cc}">${staff.length}</div><div class="sl">Всего сотрудников</div></div>
+    <div class="stat ${c.st}"><div class="sn ${c.cc}">${perfCount}</div><div class="sl">Перформеров</div></div>
     <div class="stat ${c.st}"><div class="sn ${c.cc}">${avg_rev} М</div><div class="sl">Порог оборота</div></div>
     <div class="stat ${c.st}"><div class="sn ${c.cc}">${avgS}%</div><div class="sl">Средний СБП</div></div>
-    <div class="stat ${c.st}"><div class="sn ${c.cc}">${avgA}%</div><div class="sl">Средний АТА</div></div>
   </div>
 
   <div id="chips-wrap-${g}">${buildChips(g)}</div>
@@ -355,8 +366,8 @@ function buildPanel(g) {
   <div class="tgrid">
     <div class="card">
       <div class="ch">
-        <div class="ct ${c.cc}">ПЕРФОРМЕРЫ · ${top.length} ЧЕЛ.</div>
-        <div class="thresholds"><span class="thr">СБП ≥ 40%</span><span class="thr">АТА ≥ 60%</span><span class="thr">Оборот ≥ ${avg_rev} млн</span></div>
+        <div class="ct ${c.cc}">ВСЕ СОТРУДНИКИ · ${staff.length} ЧЕЛ.</div>
+        <div class="thresholds"><span class="thr">★ Перформер</span><span class="thr">↑ Почти</span></div>
       </div>
       <div id="perf-${g}">${renderPerf(g)}</div>
     </div>
