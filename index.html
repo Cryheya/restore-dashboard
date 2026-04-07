@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>restore — Перформеры Перформеры</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#efeff3;--surface:#fff;--surface2:#f5f5f9;
+    --border:#e0e0ea;--text:#13131c;--muted:#9090b0;
+    --aplus:#b08800;--a:#049060;--b:#0c5f88;--c:#bb2a4c;
+    --gold:#b08800;--silver:#6070a0;--bronze:#8f4a14;
+    --warn:#e07000;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;font-size:13px;}
+
+  /* HEADER */
+  .hdr{padding:18px 32px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:3px;line-height:1;}
+  .logo-sub{display:inline-block;margin-top:3px;background:var(--aplus);color:#fff;font-size:8px;font-weight:800;letter-spacing:2px;padding:2px 7px;border-radius:2px;}
+  .hdr-period{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--aplus);line-height:1;text-align:right;}
+  .hdr-sub{color:var(--muted);font-size:9px;letter-spacing:1px;text-transform:uppercase;margin-top:3px;text-align:right;}
+
+  /* TABS */
+  .tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;}
+  .tab{padding:10px 18px;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;background:none;border:none;color:var(--muted);cursor:pointer;position:relative;transition:color .18s;white-space:nowrap;}
+  .tab::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:currentColor;transform:scaleX(0);transition:transform .18s;}
+  .tab:hover{color:var(--text);}
+  .tab.active::after{transform:scaleX(1);}
+  .tab[data-g="aplus"].active{color:var(--aplus);}
+  .tab[data-g="a"].active{color:var(--a);}
+  .tab[data-g="b"].active{color:var(--b);}
+  .tab[data-g="c"].active{color:var(--c);}
+  .tab[data-g="near"].active{color:var(--warn);}
+  .tab[data-g="all"].active{color:#5060c0;}
+
+  /* MAIN */
+  .main{padding:20px 32px 40px;max-width:1100px;margin:0 auto;}
+  .panel{display:none;}
+  .panel.active{display:block;animation:fi .2s ease;}
+  @keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  .ph{display:flex;align-items:baseline;gap:10px;margin-bottom:3px;}
+  .ph-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;}
+  .ph-tag{font-size:9px;font-weight:800;letter-spacing:2px;padding:3px 9px;border-radius:2px;}
+  .ph-sub{color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 15px;position:relative;overflow:hidden;}
+  .stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+  .sn{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;margin-bottom:2px;}
+  .sl{color:var(--muted);font-size:8px;letter-spacing:1px;text-transform:uppercase;}
+
+  /* CONTROLS */
+  .ctrl-bar{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+  .search-wrap{position:relative;flex:0 0 220px;}
+  .search-wrap input{width:100%;padding:7px 10px 7px 30px;border:1px solid var(--border);border-radius:5px;font-family:'Manrope',sans-serif;font-size:11px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s;}
+  .search-wrap input:focus{border-color:var(--muted);}
+  .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none;}
+  .reset-btn{padding:6px 14px;border:1px solid var(--border);border-radius:5px;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;background:var(--surface);color:var(--muted);cursor:pointer;text-transform:uppercase;transition:all .15s;white-space:nowrap;}
+  .reset-btn:hover{border-color:var(--muted);color:var(--text);}
+  .result-count{font-size:10px;color:var(--muted);white-space:nowrap;}
+
+  /* STORE CHIPS */
+  .chips-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .chips-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);width:100%;margin-bottom:4px;}
+  .chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap;}
+  .chip:hover{border-color:var(--muted);}
+  .chip.selected{color:#fff;border-color:transparent;}
+  .chip-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+  /* TWO-COL */
+  .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+  .ch{padding:10px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+  .ct{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:1.5px;}
+  .cb{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+  .thresholds{display:flex;gap:4px;flex-wrap:wrap;}
+  .thr{font-size:8px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+
+  /* PERFORMER TABLE */
+  .perf-head{display:grid;grid-template-columns:24px 1fr 60px 46px 46px;gap:6px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .perf-head div:not(:nth-child(2)){text-align:right;}
+
+  .pr{display:grid;grid-template-columns:24px 1fr 60px 46px 46px;align-items:center;gap:6px;padding:7px 15px;border-bottom:1px solid var(--border);transition:background .1s;}
+  .pr:last-child{border-bottom:none;}
+  .pr:hover{background:var(--surface2);}
+  .prk{font-family:'Bebas Neue',sans-serif;font-size:15px;text-align:center;line-height:1;}
+  .rg{color:var(--gold);} .rs{color:var(--silver);} .rb{color:var(--bronze);}
+  .rn{color:var(--muted);font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;}
+  .pn{font-weight:700;font-size:11px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ps{color:var(--muted);font-size:8.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .pv{text-align:right;}
+  .pv .v{font-weight:700;font-size:11px;display:block;}
+  .pv .l{color:var(--muted);font-size:7.5px;letter-spacing:.5px;display:block;}
+  .no-results{padding:20px 15px;text-align:center;color:var(--muted);font-size:11px;}
+
+  /* STORE TABLE */
+  .store-head{display:grid;grid-template-columns:24px 1fr 1fr 56px;gap:6px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);}
+  .sh-col{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none;display:flex;align-items:center;gap:3px;transition:color .15s;}
+  .sh-col:hover{color:var(--text);} .sh-col.sorted{color:var(--text);}
+  .sh-col-r{justify-content:flex-end;}
+  .sort-arrow{font-size:9px;opacity:.5;} .sh-col.sorted .sort-arrow{opacity:1;}
+  .sr{display:grid;grid-template-columns:24px 1fr 1fr 56px;align-items:center;gap:6px;padding:7px 15px;border-bottom:1px solid var(--border);transition:background .1s;cursor:pointer;position:relative;}
+  .sr:last-child{border-bottom:none;}
+  .sr:hover{background:var(--surface2);}
+  .sr.sel-store{border-left:3px solid;padding-left:12px;}
+  .srk{font-family:'Bebas Neue',sans-serif;font-size:14px;text-align:center;}
+  .sn2{font-weight:700;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .bw{display:flex;align-items:center;gap:5px;}
+  .bb{flex:1;height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+  .bf{height:100%;border-radius:2px;}
+  .bv{font-weight:700;font-size:10px;min-width:44px;text-align:right;white-space:nowrap;}
+  .store-hint{padding:7px 15px;font-size:9px;color:var(--muted);border-top:1px solid var(--border);text-align:center;letter-spacing:.3px;}
+
+  /* NEAR MISS */
+  .nm-section{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;padding:14px 0 8px;display:flex;align-items:center;gap:10px;}
+  .nm-count{font-family:'Manrope',sans-serif;font-size:11px;font-weight:600;color:var(--muted);}
+  .nm-head{display:grid;grid-template-columns:1fr 110px 65px 65px 65px;gap:6px;padding:6px 15px;border-bottom:1px solid var(--border);color:var(--muted);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;background:var(--surface2);}
+  .nm-row{display:grid;grid-template-columns:1fr 110px 65px 65px 65px;align-items:center;gap:6px;padding:7px 15px;border-bottom:1px solid var(--border);transition:background .1s;}
+  .nm-row:last-child{border-bottom:none;} .nm-row:hover{background:var(--surface2);}
+  .nm-name{font-weight:700;font-size:11px;} .nm-store{color:var(--muted);font-size:8.5px;}
+  .nm-val{text-align:right;font-size:11px;font-weight:600;color:var(--muted);}
+  .nm-val.fail{color:var(--c);font-weight:800;}
+  .fail-tag{display:inline-block;font-size:8px;font-weight:800;letter-spacing:.5px;padding:2px 7px;border-radius:3px;background:rgba(187,42,76,.10);color:var(--c);}
+
+  /* COLOR UTILS */
+  .ca{color:var(--aplus);} .caa{color:var(--a);} .cb2{color:var(--b);} .cc2{color:var(--c);}
+  .ta{background:rgba(176,136,0,.10);color:var(--aplus);}
+  .taa{background:rgba(4,144,96,.10);color:var(--a);}
+  .tb{background:rgba(12,95,136,.10);color:var(--b);}
+  .tc{background:rgba(187,42,76,.10);color:var(--c);}
+  .tnear{background:rgba(224,112,0,.10);color:var(--warn);}
+  .tall{background:rgba(80,96,192,.10);color:#5060c0;}
+
+  /* ALL STAFF TABLE */
+  .all-grade-section{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;padding:14px 0 8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .all-grade-count{font-family:'Manrope',sans-serif;font-size:11px;font-weight:600;color:var(--muted);}
+  .all-legend{display:flex;gap:12px;margin-left:auto;align-items:center;}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--muted);text-transform:uppercase;}
+  .legend-dot{width:8px;height:8px;border-radius:50%;}
+
+  .all-ctrl{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+  .all-chips-wrap{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;padding:8px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .all-chips-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);width:100%;margin-bottom:4px;}
+
+  .all-head{display:grid;grid-template-columns:36px 1fr 120px 68px 68px 68px 80px;gap:6px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .all-head div:not(:nth-child(2)):not(:nth-child(3)){text-align:right;}
+  .all-row{display:grid;grid-template-columns:36px 1fr 120px 68px 68px 68px 80px;align-items:center;gap:6px;padding:6px 15px;border-bottom:1px solid var(--border);transition:background .1s;}
+  .all-row:last-child{border-bottom:none;}
+  .all-row:hover{background:var(--surface2);}
+  .all-row.is-perf{background:rgba(176,136,0,.06);}
+  .all-row.is-perf:hover{background:rgba(176,136,0,.11);}
+  .all-row.is-near{background:rgba(224,112,0,.04);}
+  .all-row.is-near:hover{background:rgba(224,112,0,.09);}
+  .all-rank{font-family:'Bebas Neue',sans-serif;font-size:14px;text-align:right;color:var(--muted);line-height:1;}
+  .all-name{font-weight:700;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .all-store{color:var(--muted);font-size:8.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .all-val{text-align:right;font-size:11px;font-weight:600;}
+  .all-val.dim{color:var(--muted);}
+  .all-badge{text-align:right;}
+  .badge-perf{display:inline-block;font-size:8px;font-weight:800;letter-spacing:.5px;padding:2px 7px;border-radius:3px;background:rgba(176,136,0,.15);color:var(--aplus);}
+  .badge-near{display:inline-block;font-size:8px;font-weight:800;letter-spacing:.5px;padding:2px 7px;border-radius:3px;background:rgba(224,112,0,.12);color:var(--warn);}
+  .badge-none{display:inline-block;font-size:8px;font-weight:600;padding:2px 7px;border-radius:3px;color:var(--muted);}
+  .ba{background:var(--aplus);} .baa{background:var(--a);} .bbb{background:var(--b);} .bcc{background:var(--c);}
+  .sa::before{background:var(--aplus);} .saa::before{background:var(--a);}
+  .sb::before{background:var(--b);}    .sc::before{background:var(--c);}
+
+  .footer{text-align:center;padding:14px;color:var(--muted);font-size:9px;letter-spacing:1px;text-transform:uppercase;border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div><div class="logo">RESTORE</div><div class="logo-sub">ЭЛЕКТРОНИКА</div></div>
+  <div><div class="hdr-period">...</div><div class="hdr-sub">Загрузка...</div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" data-g="aplus" onclick="showTab('aplus',this)">Грейд A+</button>
+  <button class="tab" data-g="a"    onclick="showTab('a',this)">Грейд A</button>
+  <button class="tab" data-g="b"    onclick="showTab('b',this)">Грейд B</button>
+  <button class="tab" data-g="c"    onclick="showTab('c',this)">Грейд C</button>
+  <button class="tab" data-g="near" onclick="showTab('near',this)">⚠ Почти перформеры</button>
+  <button class="tab" data-g="all"  onclick="showTab('all',this)">Все продавцы</button>
+</div>
+
+<div class="main">
+  <div class="panel active" id="p-aplus"></div>
+  <div class="panel" id="p-a"></div>
+  <div class="panel" id="p-b"></div>
+  <div class="panel" id="p-c"></div>
+  <div class="panel" id="p-near"></div>
+  <div class="panel" id="p-all"></div>
+</div>
+
+<div class="footer" id="footer-text">restore electronics</div>
+
+<script>
+
+
+<div id="loading" style="display:flex;position:fixed;inset:0;background:rgba(239,239,243,.92);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:#13131c">RESTORE</div>
+  <div style="font-size:11px;color:#9090b0;letter-spacing:1px;text-transform:uppercase">Загрузка данных...</div>
+  <div style="width:40px;height:40px;border:3px solid #e0e0ea;border-top-color:#b08800;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
+<script>
+const TOTAL={aplus:14,a:13,b:41,c:8};
+const LABEL={aplus:'A+',a:'A',b:'B',c:'C'};
+const CFG={
+  aplus:{col:'var(--aplus)',colHex:'#b08800',bar:'ba',tag:'ta',st:'sa',cc:'ca'},
+  a:    {col:'var(--a)',    colHex:'#049060',bar:'baa',tag:'taa',st:'saa',cc:'caa'},
+  b:    {col:'var(--b)',    colHex:'#0c5f88',bar:'bbb',tag:'tb',st:'sb',cc:'cb2'},
+  c:    {col:'var(--c)',    colHex:'#bb2a4c',bar:'bcc',tag:'tc',st:'sc',cc:'cc2'},
+};
+
+// ── STATE ──
+const STATE = {};
+['aplus','a','b','c'].forEach(g => {
+  STATE[g] = { selStores: new Set(), search: '', storeSort: {key:'q',dir:-1} };
+});
+
+// ── HELPERS ──
+function rk(r) {
+  const cl = r===1?'rg':r===2?'rs':r===3?'rb':'rn';
+  return `<div class="prk ${cl}">${r}</div>`;
+}
+function sortArr(arr, key, dir) {
+  return [...arr].sort((a,b) => {
+    const av=a[key], bv=b[key];
+    if(av==null)return 1; if(bv==null)return -1;
+    return dir*(av<bv?-1:av>bv?1:0);
+  });
+}
+function esc(s){ return String(s).replace(/'/g,"\\'"); }
+
+// ── CHIPS ──
+function buildChips(g) {
+  const c = CFG[g], st = STATE[g];
+  const stores = [...new Set(PERF[g].list.map(p=>p.м))].sort();
+  const chips = stores.map(s => {
+    const sel = st.selStores.has(s);
+    return `<span class="chip ${sel?'selected':''}"
+      style="${sel?`background:${c.colHex};border-color:${c.colHex};`:''}"
+      onclick="toggleChip('${g}','${esc(s)}')"
+    ><span class="chip-dot" style="${sel?'background:#fff':'background:'+c.colHex}"></span>${s}</span>`;
+  }).join('');
+  return `<div class="chips-wrap" id="chips-${g}">
+    <div class="chips-label">Фильтр по магазинам — можно выбрать несколько</div>
+    ${chips}
+  </div>`;
+}
+
+// ── PERF TABLE ──
+function renderPerf(g) {
+  const c = CFG[g], st = STATE[g];
+  let list = PERF[g].list.filter(p => {
+    const ms = st.selStores.size === 0 || st.selStores.has(p.м);
+    const ss = !st.search || p.н.toLowerCase().includes(st.search.toLowerCase());
+    return ms && ss;
+  });
+  // always sorted by rank
+  list = [...list].sort((a,b) => a.р - b.р);
+
+  const rows = list.length === 0
+    ? `<div class="no-results">Нет перформеров по выбранному фильтру</div>`
+    : list.map(p => `<div class="pr">
+        ${rk(p.р)}
+        <div><div class="pn">${p.н}</div><div class="ps">${p.м}</div></div>
+        <div class="pv"><span class="v" style="color:${c.col}">${p.о.toFixed(1)} млн</span><span class="l">Оборот</span></div>
+        <div class="pv"><span class="v">${p.с.toFixed(1)}%</span><span class="l">СБП</span></div>
+        <div class="pv"><span class="v">${p.а.toFixed(1)}%</span><span class="l">АТА</span></div>
+      </div>`).join('');
+
+  const shown = list.length, total = PERF[g].list.length;
+  const countHtml = (shown < total || st.search)
+    ? `<span class="result-count">Показано: ${shown} из ${total}</span>` : '';
+
+  return `<div style="display:flex;align-items:center;gap:8px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);">
+    <div class="search-wrap" style="flex:1">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Поиск по имени..." value="${st.search}"
+        oninput="onSearch('${g}',this.value)" style="color:${c.colHex}">
+    </div>
+    ${countHtml}
+  </div>
+  <div class="perf-head"><div>#</div><div>Сотрудник</div><div>Оборот</div><div>СБП</div><div>АТА</div></div>
+  ${rows}`;
+}
+
+// ── STORE TABLE ──
+function renderStores(g) {
+  const c = CFG[g], st = STATE[g];
+  const ss = st.storeSort;
+  const sorted = sortArr(STORES[g], ss.key, ss.dir);
+  const maxQ = STORES[g].reduce((m,s)=>Math.max(m,s.q),0);
+
+  const arw = (key) => {
+    if (ss.key!==key) return '<span class="sort-arrow">↕</span>';
+    return `<span class="sort-arrow">${ss.dir===1?'↑':'↓'}</span>`;
+  };
+  const head = `<div class="store-head">
+    <div class="sh-col ${ss.key==='r'?'sorted':''}" onclick="sortStores('${g}','r')"># ${arw('r')}</div>
+    <div class="sh-col ${ss.key==='м'?'sorted':''}" onclick="sortStores('${g}','м')">Магазин ${arw('м')}</div>
+    <div></div>
+    <div class="sh-col sh-col-r ${ss.key==='q'?'sorted':''}" onclick="sortStores('${g}','q')">Выручка ${arw('q')}</div>
+  </div>`;
+
+  const rows = sorted.map(s => {
+    const pct = (s.q/maxQ*100).toFixed(0);
+    const sel = st.selStores.has(s.м);
+    return `<div class="sr ${sel?'sel-store':''}" style="${sel?`border-left-color:${c.colHex};background:rgba(${hexToRgb(c.colHex)},.04)`:''}"
+      onclick="toggleChip('${g}','${esc(s.м)}')">
+      <div class="srk ${s.r<=3?c.cc:''}">${s.r}</div>
+      <div class="sn2" style="${sel?`color:${c.colHex};font-weight:800`:''}">${s.м}</div>
+      <div class="bw"><div class="bb"><div class="bf ${c.bar}" style="width:${pct}%"></div></div></div>
+      <div class="bv" style="color:${c.colHex}">${s.q.toFixed(1)} М</div>
+    </div>`;
+  }).join('');
+
+  return head + rows;
+}
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16), g2 = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `${r},${g2},${b}`;
+}
+
+// ── FULL PANEL BUILD (first time) ──
+function buildPanel(g) {
+  const c = CFG[g], {avg_rev,list:top} = PERF[g], total = TOTAL[g];
+  const avgS = (top.reduce((s,p)=>s+p.с,0)/top.length).toFixed(1);
+  const avgA = (top.reduce((s,p)=>s+p.а,0)/top.length).toFixed(1);
+  const storeNote = g==='b'?`топ-10 из ${total}`:`все ${total} магазина`;
+
+  return `
+  <div class="ph"><div class="ph-title">ТОП ПЕРФОРМЕРЫ</div><span class="ph-tag ${c.tag}">ГРЕЙД ${LABEL[g]}</span></div>
+  <div class="ph-sub">${total} магазинов · порог оборота ${avg_rev} млн · Q1 2026</div>
+  <div class="stats">
+    <div class="stat ${c.st}"><div class="sn ${c.cc}">${top.length}</div><div class="sl">Перформеров в грейде</div></div>
+    <div class="stat ${c.st}"><div class="sn ${c.cc}">${avg_rev} М</div><div class="sl">Порог оборота</div></div>
+    <div class="stat ${c.st}"><div class="sn ${c.cc}">${avgS}%</div><div class="sl">Средний СБП</div></div>
+    <div class="stat ${c.st}"><div class="sn ${c.cc}">${avgA}%</div><div class="sl">Средний АТА</div></div>
+  </div>
+
+  <div id="chips-wrap-${g}">${buildChips(g)}</div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+    <button class="reset-btn" onclick="resetFilters('${g}')">✕ Сбросить фильтры</button>
+  </div>
+
+  <div class="tgrid">
+    <div class="card">
+      <div class="ch">
+        <div class="ct ${c.cc}">ПЕРФОРМЕРЫ · ${top.length} ЧЕЛ.</div>
+        <div class="thresholds"><span class="thr">СБП ≥ 40%</span><span class="thr">АТА ≥ 60%</span><span class="thr">Оборот ≥ ${avg_rev} млн</span></div>
+      </div>
+      <div id="perf-${g}">${renderPerf(g)}</div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct ${c.cc}">МАГАЗИНЫ ПО ВЫРУЧКЕ Q1</div><div class="cb">${storeNote}</div></div>
+      <div id="stores-${g}">${renderStores(g)}</div>
+      <div class="store-hint">← клик на магазин добавляет/убирает из фильтра</div>
+    </div>
+  </div>`;
+}
+
+// ── PARTIAL REFRESH ──
+function refresh(g) {
+  document.getElementById('perf-'+g).innerHTML = renderPerf(g);
+  document.getElementById('stores-'+g).innerHTML = renderStores(g);
+  document.getElementById('chips-wrap-'+g).innerHTML = buildChips(g);
+}
+
+// ── EVENTS ──
+function toggleChip(g, store) {
+  const st = STATE[g];
+  if (st.selStores.has(store)) st.selStores.delete(store);
+  else st.selStores.add(store);
+  refresh(g);
+}
+
+function onSearch(g, val) {
+  STATE[g].search = val;
+  document.getElementById('perf-'+g).innerHTML = renderPerf(g);
+}
+
+function sortStores(g, key) {
+  const ss = STATE[g].storeSort;
+  if (ss.key===key) ss.dir*=-1;
+  else { ss.key=key; ss.dir=key==='q'?-1:1; }
+  document.getElementById('stores-'+g).innerHTML = renderStores(g);
+}
+
+function resetFilters(g) {
+  STATE[g].selStores.clear();
+  STATE[g].search = '';
+  refresh(g);
+  // clear search input
+  const inp = document.querySelector(`#p-${g} input[type=text]`);
+  if (inp) inp.value = '';
+}
+
+// ── NEAR MISS ──
+function buildNearMiss() {
+  const grades=['aplus','a','b','c'];
+  const colors={aplus:'var(--aplus)',a:'var(--a)',b:'var(--b)',c:'var(--c)'};
+  const failLabel={sbp:'СБП',ata:'АТА',rev:'Оборот'};
+  let html=`
+  <div class="ph"><div class="ph-title">ПОЧТИ ПЕРФОРМЕРЫ</div><span class="ph-tag tnear">1 КРИТЕРИЙ</span></div>
+  <div class="ph-sub">сотрудники, не прошедшие ровно по одному показателю · Q1 2026</div>`;
+  grades.forEach(g=>{
+    const {avg_rev,list}=NEAR[g], c=CFG[g];
+    html+=`<div class="nm-section"><span style="color:${colors[g]}">ГРЕЙД ${LABEL[g]}</span><span class="nm-count">${list.length} чел.</span></div>
+    <div class="card" style="margin-bottom:18px">
+      <div class="nm-head"><div>Сотрудник / Магазин</div><div style="text-align:right">Оборот</div><div style="text-align:right">СБП %</div><div style="text-align:right">АТА %</div><div style="text-align:right">Не хватает</div></div>`;
+    list.forEach(p=>{
+      const fS=p.f==='sbp',fA=p.f==='ata';
+      const thr=fS?'40%':fA?'60%':`${avg_rev} млн`;
+      const act=fS?p.с.toFixed(1)+'%':fA?p.а.toFixed(1)+'%':p.о.toFixed(1)+' млн';
+      html+=`<div class="nm-row">
+        <div><div class="nm-name">${p.н}</div><div class="nm-store">${p.м}</div></div>
+        <div class="nm-val">${p.о.toFixed(1)} млн</div>
+        <div class="nm-val ${fS?'fail':''}">${p.с.toFixed(1)}%</div>
+        <div class="nm-val ${fA?'fail':''}">${p.а.toFixed(1)}%</div>
+        <div style="text-align:right"><span class="fail-tag">${failLabel[p.f]} ${act} / ${thr}</span></div>
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  return html;
+}
+
+// ── LOAD DATA FROM data.json ──
+let PERF = {}, STORES = {}, NEAR = {}, ALL_STAFF = {};
+let TOTAL = {aplus:0,a:0,b:0,c:0};
+
+async function loadData() {
+  document.getElementById('loading').style.display = 'flex';
+  try {
+    const r = await fetch('data.json');
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    const quarter = d.quarter || 'Q2 2026';
+    const period  = d.period  || 'Апр — Июн';
+    TOTAL = d.total_stores || TOTAL;
+    ['aplus','a','b','c'].forEach(g => {
+      PERF[g]      = { avg_rev: d.avgs[g], list: d.performers[g] || [] };
+      STORES[g]    = d.stores[g] || [];
+      NEAR[g]      = { avg_rev: d.avgs[g], list: d.near_miss[g] || [] };
+      ALL_STAFF[g] = d.all_staff[g] || [];
+    });
+    document.querySelector('.hdr-period').textContent = quarter;
+    document.querySelector('.hdr-sub').textContent = 'Рейтинг сотрудников и магазинов · ' + period;
+    document.title = 'restore — Перформеры ' + quarter;
+    document.querySelector('.footer').textContent =
+      'restore electronics · ' + quarter + ' · перформеры: СБП ≥ 40%, АТА ≥ 60%, оборот ≥ среднего по грейду';
+    ['aplus','a','b','c'].forEach(g => {
+      document.getElementById('p-'+g).innerHTML = buildPanel(g);
+    });
+    document.getElementById('p-near').innerHTML = buildNearMiss();
+    document.getElementById('p-all').innerHTML  = buildAllPanel();
+  } catch(e) {
+    document.getElementById('loading').innerHTML =
+      '<div style="text-align:center;color:#bb2a4c;padding:60px 20px">' +
+      '<div style="font-family:Bebas Neue,sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:8px">Ошибка загрузки</div>' +
+      '<div style="font-size:12px;color:#9090b0">Не удалось загрузить data.json<br>' + e.message + '</div></div>';
+    return;
+  }
+  document.getElementById('loading').style.display = 'none';
+}
+loadData();
+const ALL_STATE = {
+  aplus: { selStores: new Set(), search: '' },
+  a:     { selStores: new Set(), search: '' },
+  b:     { selStores: new Set(), search: '' },
+  c:     { selStores: new Set(), search: '' },
+};
+
+function allStores(g) {
+  return [...new Set(ALL_STAFF[g].map(p => p.м))].sort();
+}
+
+function buildAllChips(g) {
+  const st = ALL_STATE[g], c = CFG[g];
+  const stores = allStores(g);
+  const chips = stores.map(s => {
+    const sel = st.selStores.has(s);
+    return `<span class="chip ${sel?'selected':''}"
+      style="${sel?`background:${c.colHex};border-color:${c.colHex};`:''}"
+      onclick="toggleAllChip('${g}','${esc(s)}')"
+    ><span class="chip-dot" style="${sel?'background:#fff':'background:'+c.colHex}"></span>${s}</span>`;
+  }).join('');
+  return `<div class="all-chips-wrap" id="all-chips-${g}">
+    <div class="all-chips-label">Фильтр по магазинам</div>${chips}
+  </div>`;
+}
+
+function renderAllTable(g) {
+  const st = ALL_STATE[g], c = CFG[g];
+  let list = ALL_STAFF[g].filter(p => {
+    const ms = st.selStores.size === 0 || st.selStores.has(p.м);
+    const ss = !st.search || p.н.toLowerCase().includes(st.search.toLowerCase());
+    return ms && ss;
+  });
+
+  const total = ALL_STAFF[g].length;
+  const shown = list.length;
+  const perfCount = list.filter(p => p.p).length;
+  const countHtml = `<span class="result-count">Показано: ${shown} из ${total} · перформеров: ${perfCount}</span>`;
+
+  const rows = list.map(p => {
+    const badgeHtml = p.p
+      ? `<span class="badge-perf">★ Перформер</span>`
+      : p.nm
+        ? `<span class="badge-near">↑ Почти</span>`
+        : `<span class="badge-none">—</span>`;
+    return `<div class="all-row ${p.p?'is-perf':p.nm?'is-near':''}">
+      <div class="all-rank">${p.р}</div>
+      <div><div class="all-name">${p.н}</div><div class="all-store">${p.м}</div></div>
+      <div class="all-val" style="color:${c.colHex};text-align:right">${p.о.toFixed(1)} млн</div>
+      <div class="all-val ${p.с<40?'fail':''}" style="text-align:right;${p.с<40?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
+      <div class="all-val ${p.а<60?'fail':''}" style="text-align:right;${p.а<60?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
+      <div class="all-badge">${badgeHtml}</div>
+    </div>`;
+  }).join('') || `<div class="no-results">Нет сотрудников по выбранному фильтру</div>`;
+
+  return `<div style="display:flex;align-items:center;gap:8px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);">
+    <div class="search-wrap" style="flex:1">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Поиск по имени..." value="${st.search}"
+        oninput="onAllSearch('${g}',this.value)" style="color:${c.colHex}">
+    </div>
+    ${countHtml}
+  </div>
+  <div class="all-head"><div>#</div><div>Сотрудник</div><div style="text-align:right">Оборот</div><div style="text-align:right">СБП %</div><div style="text-align:right">АТА %</div><div style="text-align:right">Статус</div></div>
+  ${rows}`;
+}
+
+function buildAllPanel() {
+  const grades = ['aplus','a','b','c'];
+  const colors = {aplus:'var(--aplus)',a:'var(--a)',b:'var(--b)',c:'var(--c)'};
+  const avgs = {aplus:18.85,a:11.89,b:8.52,c:4.70};
+
+  let html = `
+  <div class="ph"><div class="ph-title">ВСЕ ПРОДАВЦЫ</div><span class="ph-tag tall">ПО ГРЕЙДАМ</span></div>
+  <div class="ph-sub">все ранжированные сотрудники · Q1 2026 · перформеры подсвечены</div>
+  <div class="stats" style="margin-bottom:18px;">
+    <div class="stat sa"><div class="sn ca">${ALL_STAFF.aplus.length}</div><div class="sl">Сотрудников A+</div></div>
+    <div class="stat saa"><div class="sn caa">${ALL_STAFF.a.length}</div><div class="sl">Сотрудников A</div></div>
+    <div class="stat sb"><div class="sn cb2">${ALL_STAFF.b.length}</div><div class="sl">Сотрудников B</div></div>
+    <div class="stat sc"><div class="sn cc2">${ALL_STAFF.c.length}</div><div class="sl">Сотрудников C</div></div>
+  </div>`;
+
+  grades.forEach(g => {
+    const c = CFG[g], st = ALL_STATE[g];
+    const total = ALL_STAFF[g].length;
+    const perfs = ALL_STAFF[g].filter(p=>p.p).length;
+    html += `
+    <div class="all-grade-section">
+      <span style="color:${colors[g]}">ГРЕЙД ${LABEL[g]}</span>
+      <span class="all-grade-count">${total} чел. · ${perfs} перформеров · порог оборота ${avgs[g]} млн</span>
+      <div class="all-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(176,136,0,.5)"></div>Перформер</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(224,112,0,.4)"></div>Почти</div>
+      </div>
+    </div>
+    <div id="all-chips-wrap-${g}">${buildAllChips(g)}</div>
+    <div style="margin-bottom:6px;"><button class="reset-btn" onclick="resetAllFilters('${g}')">✕ Сброс</button></div>
+    <div class="card" style="margin-bottom:24px;">
+      <div id="all-table-${g}">${renderAllTable(g)}</div>
+    </div>`;
+  });
+  return html;
+}
+
+function toggleAllChip(g, store) {
+  const st = ALL_STATE[g];
+  if (st.selStores.has(store)) st.selStores.delete(store);
+  else st.selStores.add(store);
+  document.getElementById('all-chips-wrap-'+g).innerHTML = buildAllChips(g);
+  document.getElementById('all-table-'+g).innerHTML = renderAllTable(g);
+}
+
+function onAllSearch(g, val) {
+  ALL_STATE[g].search = val;
+  document.getElementById('all-table-'+g).innerHTML = renderAllTable(g);
+}
+
+function resetAllFilters(g) {
+  ALL_STATE[g].selStores.clear();
+  ALL_STATE[g].search = '';
+  document.getElementById('all-chips-wrap-'+g).innerHTML = buildAllChips(g);
+  document.getElementById('all-table-'+g).innerHTML = renderAllTable(g);
+  const inp = document.querySelector(`#p-all #all-table-${g} input`);
+  if (inp) inp.value = '';
+}
+
+document.getElementById('p-all').innerHTML = buildAllPanel();
+
+function showTab(g, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+g).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
