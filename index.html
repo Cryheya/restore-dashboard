@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>restore — Перформеры Перформеры</title>
+<title>restore — Перформеры</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -176,7 +176,7 @@
 
 <div class="hdr">
   <div><div class="logo">RESTORE</div><div class="logo-sub">ЭЛЕКТРОНИКА</div></div>
-  <div><div class="hdr-period">...</div><div class="hdr-sub">Загрузка...</div></div>
+  <div><div class="hdr-period" id="hdr-q">...</div><div class="hdr-sub">Загрузка данных...</div></div>
 </div>
 
 <div class="tabs">
@@ -197,15 +197,14 @@
   <div class="panel" id="p-all"></div>
 </div>
 
-<div class="footer" id="footer-text">restore electronics</div>
-
-<script>
+<div class="footer">restore electronics</div>
 
 
-<div id="loading" style="display:flex;position:fixed;inset:0;background:rgba(239,239,243,.92);z-index:999;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-  <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:#13131c">RESTORE</div>
+
+<div id="loading" style="display:flex;position:fixed;inset:0;background:rgba(239,239,243,.94);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:14px">
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:3px;color:#13131c">RESTORE</div>
   <div style="font-size:11px;color:#9090b0;letter-spacing:1px;text-transform:uppercase">Загрузка данных...</div>
-  <div style="width:40px;height:40px;border:3px solid #e0e0ea;border-top-color:#b08800;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+  <div style="width:36px;height:36px;border:3px solid #e0e0ea;border-top-color:#b08800;border-radius:50%;animation:spin .8s linear infinite"></div>
 </div>
 <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
@@ -436,18 +435,18 @@ function buildNearMiss() {
   return html;
 }
 
+
 // ── LOAD DATA FROM data.json ──
-let PERF = {}, STORES = {}, NEAR = {}, ALL_STAFF = {};
-let TOTAL = {aplus:0,a:0,b:0,c:0};
+let PERF={}, STORES={}, NEAR={}, ALL_STAFF={};
+let TOTAL={aplus:0,a:0,b:0,c:0};
 
 async function loadData() {
-  document.getElementById('loading').style.display = 'flex';
   try {
     const r = await fetch('data.json');
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const d = await r.json();
-    const quarter = d.quarter || 'Q2 2026';
-    const period  = d.period  || 'Апр — Июн';
+    const quarter = d.quarter || '';
+    const period  = d.period  || '';
     TOTAL = d.total_stores || TOTAL;
     ['aplus','a','b','c'].forEach(g => {
       PERF[g]      = { avg_rev: d.avgs[g], list: d.performers[g] || [] };
@@ -455,7 +454,7 @@ async function loadData() {
       NEAR[g]      = { avg_rev: d.avgs[g], list: d.near_miss[g] || [] };
       ALL_STAFF[g] = d.all_staff[g] || [];
     });
-    document.querySelector('.hdr-period').textContent = quarter;
+    document.getElementById('hdr-q').textContent = quarter;
     document.querySelector('.hdr-sub').textContent = 'Рейтинг сотрудников и магазинов · ' + period;
     document.title = 'restore — Перформеры ' + quarter;
     document.querySelector('.footer').textContent =
@@ -467,9 +466,9 @@ async function loadData() {
     document.getElementById('p-all').innerHTML  = buildAllPanel();
   } catch(e) {
     document.getElementById('loading').innerHTML =
-      '<div style="text-align:center;color:#bb2a4c;padding:60px 20px">' +
-      '<div style="font-family:Bebas Neue,sans-serif;font-size:24px;letter-spacing:2px;margin-bottom:8px">Ошибка загрузки</div>' +
-      '<div style="font-size:12px;color:#9090b0">Не удалось загрузить data.json<br>' + e.message + '</div></div>';
+      '<div style="text-align:center;padding:40px;color:#bb2a4c">' +
+      '<b style="font-size:16px">Ошибка загрузки data.json</b><br><br>' +
+      '<span style="font-size:12px;color:#9090b0">' + e.message + '</span></div>';
     return;
   }
   document.getElementById('loading').style.display = 'none';
