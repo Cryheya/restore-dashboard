@@ -62,6 +62,8 @@
   .search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none;}
   .reset-btn{padding:6px 14px;border:1px solid var(--border);border-radius:5px;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;background:var(--surface);color:var(--muted);cursor:pointer;text-transform:uppercase;transition:all .15s;white-space:nowrap;}
   .reset-btn:hover{border-color:var(--muted);color:var(--text);}
+  .toggle-btn{padding:5px 12px;border:1px solid var(--border);border-radius:5px;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;}
+  .toggle-btn:hover{border-color:var(--muted);color:var(--text);}
   .result-count{font-size:10px;color:var(--muted);white-space:nowrap;}
 
   /* STORE CHIPS */
@@ -224,7 +226,7 @@ const CFG={
 // ── STATE ──
 const STATE = {};
 ['aplus','a','b','c'].forEach(g => {
-  STATE[g] = { selStores: new Set(), search: '', storeSort: {key:'q',dir:-1} };
+  STATE[g] = { selStores: new Set(), search: '', storeSort: {key:'q',dir:-1}, showPerf: 'all', chipsOpen: false };
 });
 
 // ── HELPERS ──
@@ -241,10 +243,12 @@ function sortArr(arr, key, dir) {
 }
 function esc(s){ return String(s).replace(/'/g,"\\'"); }
 
-// ── CHIPS ──
+// ── CHIPS (collapsible) ──
 function buildChips(g) {
   const c = CFG[g], st = STATE[g];
   const stores = [...new Set(ALL_STAFF[g].map(p=>p.м))].sort();
+  const selCount = st.selStores.size;
+  const open = st.chipsOpen;
   const chips = stores.map(s => {
     const sel = st.selStores.has(s);
     return `<span class="chip ${sel?'selected':''}"
@@ -252,9 +256,13 @@ function buildChips(g) {
       onclick="toggleChip('${g}','${esc(s)}')"
     ><span class="chip-dot" style="${sel?'background:#fff':'background:'+c.colHex}"></span>${s}</span>`;
   }).join('');
-  return `<div class="chips-wrap" id="chips-${g}">
-    <div class="chips-label">Фильтр по магазинам — можно выбрать несколько</div>
-    ${chips}
+  const selLabel = selCount > 0 ? ` · выбрано: ${selCount}` : '';
+  return `<div class="chips-wrap" id="chips-${g}" style="cursor:default">
+    <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none" onclick="toggleChips('${g}')">
+      <div class="chips-label" style="margin-bottom:0">Фильтр по магазинам${selLabel}</div>
+      <span style="font-size:11px;color:var(--muted);font-weight:700;padding:2px 6px">${open?'▲ скрыть':'▼ показать'}</span>
+    </div>
+    ${open ? `<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">${chips}</div>` : ''}
   </div>`;
 }
 
@@ -264,7 +272,8 @@ function renderPerf(g) {
   let list = ALL_STAFF[g].filter(p => {
     const ms = st.selStores.size === 0 || st.selStores.has(p.м);
     const ss = !st.search || p.н.toLowerCase().includes(st.search.toLowerCase());
-    return ms && ss;
+    const ps = st.showPerf === 'all' || p.p;
+    return ms && ss && ps;
   });
   list = [...list].sort((a,b) => a.р - b.р);
 
@@ -288,12 +297,16 @@ function renderPerf(g) {
         </div>`;
       }).join('');
 
-  return `<div style="display:flex;align-items:center;gap:8px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);">
-    <div class="search-wrap" style="flex:1">
+  const btnAll  = `<button class="toggle-btn ${st.showPerf==='all'?'active':''}"  onclick="setShowPerf('${g}','all')"  style="${st.showPerf==='all'?'background:'+c.colHex+';color:#fff;border-color:'+c.colHex:''}">Все</button>`;
+  const btnPerf = `<button class="toggle-btn ${st.showPerf==='perf'?'active':''}" onclick="setShowPerf('${g}','perf')" style="${st.showPerf==='perf'?'background:'+c.colHex+';color:#fff;border-color:'+c.colHex:''}">Только перформеры</button>`;
+
+  return `<div style="display:flex;align-items:center;gap:8px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);flex-wrap:wrap;">
+    <div class="search-wrap" style="flex:1;min-width:140px">
       <span class="search-icon">🔍</span>
       <input type="text" placeholder="Поиск по имени..." value="${st.search}"
         oninput="onSearch('${g}',this.value)" style="color:${c.colHex}">
     </div>
+    <div style="display:flex;gap:4px">${btnAll}${btnPerf}</div>
     ${countHtml}
   </div>
   <div class="perf-head"><div>#</div><div>Сотрудник</div><div>Оборот</div><div>СБП</div><div>АТА</div></div>
@@ -394,6 +407,34 @@ function toggleChip(g, store) {
   refresh(g);
 }
 
+function toggleChips(g) {
+  STATE[g].chipsOpen = !STATE[g].chipsOpen;
+  document.getElementById('chips-wrap-'+g).innerHTML = (() => {
+    const c = CFG[g], st = STATE[g];
+    const stores = [...new Set(ALL_STAFF[g].map(p=>p.м))].sort();
+    const selCount = st.selStores.size;
+    const open = st.chipsOpen;
+    const chips = stores.map(s => {
+      const sel = st.selStores.has(s);
+      return `<span class="chip ${sel?'selected':''}"
+        style="${sel?`background:${c.colHex};border-color:${c.colHex};`:''}"
+        onclick="toggleChip('${g}','${esc(s)}')"
+      ><span class="chip-dot" style="${sel?'background:#fff':'background:'+c.colHex}"></span>${s}</span>`;
+    }).join('');
+    const selLabel = selCount > 0 ? ` · выбрано: ${selCount}` : '';
+    return `<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none" onclick="toggleChips('${g}')">
+      <div class="chips-label" style="margin-bottom:0">Фильтр по магазинам${selLabel}</div>
+      <span style="font-size:11px;color:var(--muted);font-weight:700;padding:2px 6px">${open?'▲ скрыть':'▼ показать'}</span>
+    </div>
+    ${open ? `<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">${chips}</div>` : ''}`;
+  })();
+}
+
+function setShowPerf(g, val) {
+  STATE[g].showPerf = val;
+  document.getElementById('perf-'+g).innerHTML = renderPerf(g);
+}
+
 function onSearch(g, val) {
   STATE[g].search = val;
   document.getElementById('perf-'+g).innerHTML = renderPerf(g);
@@ -409,8 +450,9 @@ function sortStores(g, key) {
 function resetFilters(g) {
   STATE[g].selStores.clear();
   STATE[g].search = '';
+  STATE[g].showPerf = 'all';
+  STATE[g].chipsOpen = false;
   refresh(g);
-  // clear search input
   const inp = document.querySelector(`#p-${g} input[type=text]`);
   if (inp) inp.value = '';
 }
