@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Чек-лист магазина IRG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2330;
+    --border: #2a2f3e;
+    --accent: #3b7dd8;
+    --accent2: #5a9bf5;
+    --text: #e8eaf0;
+    --text2: #8b93a8;
+    --text3: #555e75;
+    --yes: #22c55e; --yes-bg: rgba(34,197,94,.12); --yes-border: rgba(34,197,94,.3);
+    --no:  #ef4444; --no-bg:  rgba(239,68,68,.12);  --no-border:  rgba(239,68,68,.3);
+    --np:  #94a3b8; --np-bg:  rgba(148,163,184,.1); --np-border:  rgba(148,163,184,.25);
+    --child-bg: #161a24;
+    --section-gradient: linear-gradient(135deg, #1d3461 0%, #1a2a4a 100%);
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { font-size: 15px; }
+  body { font-family: 'Golos Text', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 16px 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 24px rgba(0,0,0,.4);
+  }
+  .header-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .logo { width: 36px; height: 36px; background: var(--accent); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo svg { width: 20px; height: 20px; fill: white; }
+  .header-title { flex: 1; }
+  .header-title h1 { font-size: 1rem; font-weight: 700; line-height: 1.2; }
+  .header-title span { font-size: .75rem; color: var(--text2); }
+
+  /* Score bar */
+  .score-bar { padding: 10px 0 14px; }
+  .score-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .score-label { font-size: .8rem; color: var(--text2); white-space: nowrap; }
+  .score-numbers { font-size: 1.1rem; font-weight: 700; color: var(--text); }
+  .score-pct { margin-left: auto; font-size: 1.4rem; font-weight: 700; color: var(--accent2); }
+  .progress-track { height: 6px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .4s cubic-bezier(.4,0,.2,1); width: 0%; }
+
+  /* Meta inputs */
+  .meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 0 12px; }
+  .meta-field { display: flex; flex-direction: column; gap: 4px; }
+  .meta-field label { font-size: .7rem; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; }
+  .meta-field input { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm);
+    color: var(--text); font-family: inherit; font-size: .85rem; padding: 7px 10px; outline: none; width: 100%; }
+  .meta-field input:focus { border-color: var(--accent); }
+  .meta-wide { grid-column: 1/-1; }
+
+  /* ── MAIN ── */
+  main { padding: 12px 12px 80px; max-width: 720px; margin: 0 auto; }
+
+  /* Section */
+  .section { margin-bottom: 10px; border-radius: var(--radius); overflow: hidden;
+    border: 1px solid var(--border); }
+  .section-header { background: var(--section-gradient); padding: 13px 16px;
+    display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none;
+    border-bottom: 1px solid rgba(255,255,255,.06); }
+  .section-header:active { opacity: .85; }
+  .section-num { font-size: .65rem; font-weight: 700; background: rgba(255,255,255,.15);
+    border-radius: 4px; padding: 2px 6px; color: rgba(255,255,255,.8); letter-spacing: .05em; }
+  .section-name { flex: 1; font-size: .9rem; font-weight: 600; }
+  .section-badge { display: flex; align-items: center; gap: 6px; }
+  .badge-score { font-size: .8rem; font-weight: 600; color: rgba(255,255,255,.7); }
+  .section-chevron { color: rgba(255,255,255,.5); transition: transform .25s; font-size: 1rem; }
+  .section.collapsed .section-chevron { transform: rotate(-90deg); }
+  .section.collapsed .section-body { display: none; }
+
+  .subsection-header { background: rgba(59,125,216,.08); padding: 8px 16px;
+    font-size: .75rem; font-weight: 600; color: var(--accent2); letter-spacing: .04em;
+    text-transform: uppercase; border-bottom: 1px solid var(--border); }
+
+  /* Item row */
+  .item { border-bottom: 1px solid var(--border); }
+  .item:last-child { border-bottom: none; }
+  .item-row { display: flex; align-items: flex-start; gap: 0; padding: 0; }
+  .item-main { flex: 1; padding: 11px 14px 11px 14px; cursor: pointer; }
+  .item-num { font-size: .68rem; color: var(--text3); margin-bottom: 2px; font-weight: 500; }
+  .item-text { font-size: .85rem; line-height: 1.45; color: var(--text); }
+  .item-text.has-children { cursor: pointer; }
+
+  /* Vote buttons */
+  .vote-btns { display: flex; flex-direction: column; gap: 1px; padding: 6px 10px 6px 0; justify-content: center; flex-shrink: 0; }
+  .vbtn { border: none; border-radius: 5px; font-family: inherit; font-size: .72rem; font-weight: 600;
+    padding: 5px 9px; cursor: pointer; transition: all .15s; white-space: nowrap;
+    background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+  .vbtn:active { transform: scale(.94); }
+  .vbtn.yes.active { background: var(--yes-bg); color: var(--yes); border-color: var(--yes-border); }
+  .vbtn.no.active  { background: var(--no-bg);  color: var(--no);  border-color: var(--no-border); }
+  .vbtn.np.active  { background: var(--np-bg);  color: var(--np);  border-color: var(--np-border); }
+
+  /* Auto-computed parent */
+  .auto-badge { font-size: .72rem; font-weight: 600; padding: 4px 10px; border-radius: 5px;
+    border: 1px solid; white-space: nowrap; }
+  .auto-badge.yes  { background: var(--yes-bg); color: var(--yes); border-color: var(--yes-border); }
+  .auto-badge.no   { background: var(--no-bg);  color: var(--no);  border-color: var(--no-border); }
+  .auto-badge.empty { background: var(--surface2); color: var(--text3); border-color: var(--border); }
+  .auto-wrap { padding: 6px 10px 6px 0; display: flex; align-items: center; flex-shrink: 0; }
+
+  /* Children toggle */
+  .children-toggle { display: flex; align-items: center; gap: 6px; padding: 6px 14px 2px;
+    cursor: pointer; color: var(--text3); font-size: .78rem; }
+  .children-toggle .ct-icon { font-size: .7rem; transition: transform .2s; }
+  .children-toggle.open .ct-icon { transform: rotate(90deg); }
+  .children-list { padding: 0 0 4px 0; }
+  .children-list.hidden { display: none; }
+
+  /* Child item */
+  .child-item { display: flex; align-items: flex-start; background: var(--child-bg);
+    border-top: 1px solid rgba(255,255,255,.04); }
+  .child-indicator { width: 3px; background: rgba(59,125,216,.3); flex-shrink: 0; align-self: stretch; margin-left: 14px; border-radius: 2px; margin: 6px 0 6px 14px; }
+  .child-content { flex: 1; padding: 9px 0 9px 10px; }
+  .child-num { font-size: .65rem; color: var(--text3); margin-bottom: 1px; }
+  .child-text { font-size: .82rem; line-height: 1.4; color: #a0a8bc; }
+  .child-vote { display: flex; flex-direction: column; gap: 1px; padding: 6px 10px 6px 6px; justify-content: center; flex-shrink: 0; }
+  .cvbtn { border: none; border-radius: 4px; font-family: inherit; font-size: .68rem; font-weight: 600;
+    padding: 4px 8px; cursor: pointer; transition: all .15s;
+    background: rgba(255,255,255,.04); color: var(--text3); border: 1px solid var(--border); }
+  .cvbtn:active { transform: scale(.92); }
+  .cvbtn.yes.active { background: var(--yes-bg); color: var(--yes); border-color: var(--yes-border); }
+  .cvbtn.no.active  { background: var(--no-bg);  color: var(--no);  border-color: var(--no-border); }
+
+  /* Comment */
+  .comment-wrap { padding: 0 14px 10px; }
+  .comment-input { width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); color: var(--text); font-family: inherit; font-size: .82rem;
+    padding: 8px 10px; outline: none; resize: none; min-height: 56px; line-height: 1.4; }
+  .comment-input:focus { border-color: var(--accent); }
+  .comment-toggle { font-size: .75rem; color: var(--text3); padding: 0 14px 8px; cursor: pointer; }
+  .comment-toggle:hover { color: var(--accent2); }
+
+  /* FAB */
+  .fab { position: fixed; bottom: 20px; right: 16px; z-index: 200;
+    background: var(--accent); color: white; border: none; border-radius: 14px;
+    padding: 13px 20px; font-family: inherit; font-size: .85rem; font-weight: 600;
+    cursor: pointer; box-shadow: 0 6px 24px rgba(59,125,216,.4);
+    display: flex; align-items: center; gap: 8px; transition: transform .15s; }
+  .fab:active { transform: scale(.95); }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 300;
+    display: flex; align-items: flex-end; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: var(--surface); border-radius: 20px 20px 0 0; padding: 20px 16px 32px;
+    width: 100%; max-width: 600px; transform: translateY(100%); transition: transform .3s cubic-bezier(.4,0,.2,1); }
+  .modal-overlay.open .modal { transform: translateY(0); }
+  .modal h2 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+  .modal-section { margin-bottom: 10px; }
+  .modal-sec-title { font-size: .8rem; color: var(--text2); margin-bottom: 6px; font-weight: 600; }
+  .modal-row { display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 0; border-bottom: 1px solid var(--border); font-size: .85rem; }
+  .modal-row:last-child { border: none; }
+  .modal-row-score { font-weight: 600; }
+  .modal-row-score.good { color: var(--yes); }
+  .modal-row-score.bad { color: var(--no); }
+  .modal-total { background: var(--surface2); border-radius: var(--radius); padding: 14px;
+    display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+  .modal-total-label { font-weight: 600; }
+  .modal-total-score { font-size: 1.3rem; font-weight: 700; color: var(--accent2); }
+  .modal-close { width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: inherit; font-size: .9rem; padding: 13px;
+    border-radius: var(--radius); cursor: pointer; margin-top: 14px; font-weight: 500; }
+
+  @media (min-width: 600px) {
+    .meta { grid-template-columns: 1fr 1fr 1fr; }
+    .meta-wide { grid-column: auto; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="header-title">
+      <h1>Чек-лист магазина</h1>
+      <span>IRG 1.0.0 · реСтор</span>
+    </div>
+  </div>
+  <div class="score-bar">
+    <div class="score-row">
+      <span class="score-label">Выполнено</span>
+      <span class="score-numbers"><span id="score-done">0</span> / <span id="score-total">0</span></span>
+      <span class="score-pct" id="score-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+  <div class="meta">
+    <div class="meta-field meta-wide">
+      <label>Магазин</label>
+      <input type="text" id="meta-store" placeholder="Название магазина">
+    </div>
+    <div class="meta-field">
+      <label>Дата</label>
+      <input type="date" id="meta-date">
+    </div>
+    <div class="meta-field">
+      <label>Проверяющий</label>
+      <input type="text" id="meta-person" placeholder="ФИО">
+    </div>
+  </div>
+</div>
+
+<main id="main-content"></main>
+
+<button class="fab" onclick="openSummary()">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+  Итоги
+</button>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeIfOutside(event)">
+  <div class="modal" id="modal">
+    <h2>📊 Сводка по разделам</h2>
+    <div id="modal-body"></div>
+    <button class="modal-close" onclick="closeSummary()">Закрыть</button>
+  </div>
+</div>
+
+<script>
+const SECTIONS = 
+[
+  {
+    "title": "1. МАГАЗИН",
+    "items": [
+      {
+        "type": "item",
+        "num": "1.1",
+        "text": "Фасад/входная группа чистая, вывеска в рабочем состоянии и чистая (равномерность подсветки, отсутствие пыли)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.2",
+        "text": "Стены/потолок/пол чистые, не имеют повреждений и не требуют ремонта. Стена возле входа в подсобное помещение и за кассовой зоной. Для стрит-формата — подоконники.",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.3",
+        "text": "Замок на дверях или рольставни исправны",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.4",
+        "text": "Освещение торгового зала и подсобного помещения включено и исправно, свет холодного тона",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.5",
+        "text": "Температура в магазине комфортная, кондиционеры исправны",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.6",
+        "text": "Кассовый стол чист и аккуратен. Наличие устройств соответствует регламенту",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.7",
+        "text": "Торговое оборудование (шкафы, столы, эконом-панели, демо-тумбы) чистое и без повреждений. Стулья презентабельны, не скрипят",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.8",
+        "text": "Подсветка мебели и шкафов включена и исправна",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.9",
+        "text": "В подсобном помещении порядок (фото прилагается). Изнутри поверхность двери чистая и не обклеена",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.10",
+        "text": "Товар в подсобном помещении расположен выше 12 см от пола (на паллетах или стеллажах)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.11",
+        "text": "Стеллажи в подсобном помещении заземлены и закреплены к стенам",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "1.12",
+        "text": "В торговом зале ОТСУТСТВУЕТ транспортировочная упаковка С/БЕЗ товара (коробки от ТВ, iMac, коробки после поставки)",
+        "children": []
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "2. МАРКЕТИНГ",
+    "items": [
+      {
+        "type": "item",
+        "num": "2.1",
+        "text": "В магазине играет актуальный музыкальный трек",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.2",
+        "text": "Выкладка соответствует мерчендайзингу и планограмме (из MCS для Samsung)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.3",
+        "text": "Товар в торговом зале чистый, без загрязнений и деформаций упаковки",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.4",
+        "text": "В торговом зале нет пустых крючков, нет пустых мест на полках и столах",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.5",
+        "text": "Крючки, полки, стоп-локеры чистые, без повреждений",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.6",
+        "text": "В торговом зале НЕ представлен товар без цены или недоступный к продаже",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.7",
+        "text": "На белых столах и тумбах все демо-устройства имеют наклейку «Демо образец», запас наклеек в наличии",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.8",
+        "text": "Ценники прикреплены/установлены по стандартам. Нет многослойности и повреждений",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.9",
+        "text": "Ценники чистые (без отпечатков и грязи внутри). Под ценниками чисто",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.10",
+        "text": "Информация на ценниках соответствует 1С или акции, оформлены согласно инструкции (промо, акции Samsung)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.11",
+        "text": "Рекламное оборудование актуальное, чистое и без повреждений (DPOP-панели, ценникодержатели, стенди, держатели)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.12",
+        "text": "Маркетинговые и рекламные материалы актуальные, чистые, размещены по правилам мерчендайзинга",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.13",
+        "text": "Тросики на держателях A0 в натянутом состоянии",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.14",
+        "text": "Рекламные стенди актуальны и размещены в зале",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.15",
+        "text": "Солюшн-панели: чистые, натянутые, без складок и повреждений. Ткань спрятана в панель. Графика соответствует планограмме",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.16",
+        "text": "Рекламные экраны чистые, без повреждений, в рабочем состоянии. Контент актуален",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.17",
+        "text": "Вся техника на демо-столах в рабочем состоянии, без повреждений, подключена к Wi-Fi, есть доступ к интернету, актуальное время",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.18",
+        "text": "DEMO-устройства чистые. Отсутствуют отпечатки и следы использования по всему периметру",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.19",
+        "text": "На DEMO-устройствах Samsung установлен Retail mode с правильным временем проигрывания и актуальным роликом",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.20",
+        "text": "На DEMO-устройствах Apple установлены demo-ролики. Настроено автоматическое воспроизведение",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.21",
+        "text": "Подставки для DEMO-устройств чистые, без повреждений, закреплены по планограмме. Кабели чистые",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.22",
+        "text": "На входной группе стикер режима работы без повреждений",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.23",
+        "text": "DPOP-панели подключены к серверу и проигрывают актуальные ролики",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "2.24",
+        "text": "В подсобном помещении/на складе нет доступного для продажи товара, НЕ представленного в торговом зале",
+        "children": []
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "3. ТЕЛЕВИЗОРЫ",
+    "items": [
+      {
+        "type": "item",
+        "num": "3.1",
+        "text": "На витрине с ТВ нет пустых мест",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "3.2",
+        "text": "Все ТВ подключены к интернету, настроен SMART TV",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "3.3",
+        "text": "На ТВ установлены актуальные промо-ролики и DEMO-контент",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "3.4",
+        "text": "Пульты ДУ от ТВ и саундбаров в легкодоступном месте для персонала, исправны и настроены",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "3.5",
+        "text": "Наличие мольберта (подставка для демонстрации ТВ, предпродажной подготовки)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "3.6",
+        "text": "Все саундбары подключены к ТВ для демонстрации",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "3.7",
+        "text": "Провода от ТВ и саундбаров спрятаны",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "3.8",
+        "text": "В магазине есть флешки с демо-контентом, используются для демонстрации ТВ",
+        "children": []
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "4. БЕЗОПАСНОСТЬ",
+    "items": [
+      {
+        "type": "item",
+        "num": "4.1",
+        "text": "Шкафы закрыты на ключ, открытых магнитных локкеров (крючков) нет",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.2",
+        "text": "Ключи от шкафов/магнитные в необходимом количестве и в безопасном месте",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.3",
+        "text": "Ключи от магазина есть у АКТУАЛЬНОГО штата. В магазине есть дополнительный комплект",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.4",
+        "text": "Дверь в подсобное помещение закрыта. Магнитный замок исправен, есть резервная ключ-карта",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.5",
+        "text": "Сигнализация на всех демо-устройствах подключена и исправна. Есть запас dok-станций и проводов",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.6",
+        "text": "Видеонаблюдение исправно, записи хранятся не менее 30 дней. Дата и время на записи актуальны. Доступ у управляющего/старшего продавца",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.7",
+        "text": "Противокражные рамки и размагничиватель функционируют корректно. Товар имеет противокражные наклейки, есть запас",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.8",
+        "text": "Кассовый ящик закрыт",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.9",
+        "text": "В кассе наличность соответствует X-отчёту",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.10",
+        "text": "Количество денежных средств в кассовом ящике соответствует регламенту (100 000 руб.)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.11",
+        "text": "Сейф закрыт и закреплён к полу/стене/стеллажу, виден в камеру видеонаблюдения",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.12",
+        "text": "Остаток денежных средств в сейфе соответствует отчёту денежных средств в 1С",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.13",
+        "text": "Инкассация (в т.ч. АДМ) осуществляется своевременно. Нет уведомлений о несдаче от сотрудников КРО",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.14",
+        "text": "Есть размен",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.15",
+        "text": "Соответствие товаров на складах: демо/брак/уценка/пф/сервис/уценка используемая",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.16",
+        "text": "Выборочная инвентаризация подтвердила соответствие фактического наличия данным в 1С",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.17",
+        "text": "Проведена/запланирована ежеквартальная полная инвентаризация ВСЕХ складов (указать дату в комментарии)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.18",
+        "text": "Охранная система Гольфстрим исправна, проведена проверка работоспособности (через КЦ/Бота Гольфстрим)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.19",
+        "text": "Пропуск в ТЦ оформлен для всего АКТУАЛЬНОГО штата. Пропуска уволенных сотрудников аннулированы",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "4.20",
+        "text": "У магазина есть доступ к порталу администрации ТЦ",
+        "children": []
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "5. ЗНАНИЯ",
+    "items": [
+      {
+        "type": "item",
+        "num": "5.1",
+        "text": "Соответствие персонала утверждённому графику работы в WFM",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.2",
+        "text": "В штатном расписании 1С только актуальные сотрудники. Карточки сотрудников в 1С заполнены",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.3",
+        "text": "На входе в магазин присутствует свободный сотрудник",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.4",
+        "text": "Сотрудники опрятны. Форма, ленты и бейджи соответствуют утверждённой инструкции по мерчендайзингу",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.5",
+        "text": "Все сотрудники магазина имеют учётную запись POS-Credit и ДК",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.6",
+        "text": "Все сотрудники магазина имеют учётную запись iSpring",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.7",
+        "text": "Все сотрудники магазина имеют учётную запись S+ (для Samsung)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.8",
+        "text": "Проверка знаний: управляющий/старший продавец знает KPI магазина (отметить ошибки в комментарии)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.9",
+        "text": "Проверка знаний: сотрудник знает личный план и прогнозное выполнение плана",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.10",
+        "text": "Проверка знаний: сотрудник знает систему мотивации",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.11",
+        "text": "Проверка знаний: сотрудник знает дополнительные мотивации",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.12",
+        "text": "Проверка знаний: сотрудник знает акции и их механики",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.13",
+        "text": "Проверка знаний: сотрудник знает продукты",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.14",
+        "text": "Проверка знаний: сотрудник знает ключевые цели направления",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.15",
+        "text": "Проверка знаний: сотрудник знает работу с агентским товаром",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.16",
+        "text": "Проверка знаний: сотрудник знает работу с проектом «Персонализация»",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.17",
+        "text": "Знания модели обслуживания. Указать ФИО проверяемого. Недостающие этапы — в комментарии",
+        "children": [
+          {
+            "num": "5.17а",
+            "text": "Начало диалога"
+          },
+          {
+            "num": "5.17б",
+            "text": "Понимание потребности"
+          },
+          {
+            "num": "5.17в",
+            "text": "Предложение решения"
+          },
+          {
+            "num": "5.17г",
+            "text": "Расширение продажи"
+          },
+          {
+            "num": "5.17д",
+            "text": "Преодоление сомнений"
+          },
+          {
+            "num": "5.17е",
+            "text": "Завершение диалога"
+          },
+          {
+            "num": "5.17ж",
+            "text": "Дополнительные наблюдения"
+          }
+        ]
+      },
+      {
+        "type": "item",
+        "num": "5.18",
+        "text": "Проведены листы наблюдения по модели обслуживания сотрудников в смене. Внесены комментарии по активности и инициативе",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.19",
+        "text": "У сотрудников есть понимание конкурентной ситуации в ТЦ/локации",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "5.20",
+        "text": "В подсобном помещении есть информ. доска с актуальной информацией. Недостающие позиции — в комментарии",
+        "children": [
+          {
+            "num": "5.20а",
+            "text": "Условия основной мотивации сотрудников"
+          },
+          {
+            "num": "5.20б",
+            "text": "Актуальный список дополнительных мотиваций"
+          },
+          {
+            "num": "5.20в",
+            "text": "Порядок действий при страховых случаях"
+          },
+          {
+            "num": "5.20г",
+            "text": "Таблица сравнения уровней программы привилегий"
+          },
+          {
+            "num": "5.20д",
+            "text": "Листовка «Горячая линия безопасности»"
+          },
+          {
+            "num": "5.20е",
+            "text": "Памятка от отдела логистики"
+          },
+          {
+            "num": "5.20ж",
+            "text": "Памятка «Оказание первой помощи»"
+          },
+          {
+            "num": "5.20з",
+            "text": "Актуальный список сотрудников КРО"
+          },
+          {
+            "num": "5.20и",
+            "text": "Матрица коммуникации с бухгалтерией"
+          },
+          {
+            "num": "5.20к",
+            "text": "Расписание тренингов на ближайший месяц"
+          }
+        ]
+      },
+      {
+        "type": "item",
+        "num": "5.21",
+        "text": "Управляющий магазина интересуется отзывами клиентов на сторонних ресурсах",
+        "children": []
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "6. УГОЛОК ПОТРЕБИТЕЛЯ",
+    "items": [
+      {
+        "type": "item",
+        "num": "6.1",
+        "text": "Размещён в ТЗ в доступном для покупателя месте, без повреждений, чист",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "6.2",
+        "text": "Имеется регламентированный перечень информационных документов для покупателя. Недостающие — в комментарии",
+        "children": [
+          {
+            "num": "6.2а",
+            "text": "Прайс-листы по услугам и ПО"
+          },
+          {
+            "num": "6.2б",
+            "text": "Реквизиты ООО «реСтор» / ООО «Носимо»"
+          },
+          {
+            "num": "6.2в",
+            "text": "Перечень категорий граждан, имеющих право на обслуживание вне очереди"
+          },
+          {
+            "num": "6.2г",
+            "text": "Правила продажи товаров по договору розничной купли-продажи"
+          },
+          {
+            "num": "6.2д",
+            "text": "Правила бытового обслуживания населения"
+          },
+          {
+            "num": "6.2е",
+            "text": "Контактные телефоны органов по защите прав потребителей (Роспотребнадзор), экстренных служб: ГО, ЧС, ГУВД и ФСБ"
+          },
+          {
+            "num": "6.2ж",
+            "text": "Копия свидетельства о государственной регистрации организации (ОГРН)"
+          },
+          {
+            "num": "6.2з",
+            "text": "Шаблон заказа-наряда на оказание услуг"
+          },
+          {
+            "num": "6.3",
+            "text": "Актуальный ЗоЗПП и правила торговли (редакция текущего года)"
+          }
+        ]
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "7. ОХРАНА ТРУДА",
+    "items": [
+      {
+        "type": "item",
+        "num": "7.1",
+        "text": "Аптечка соответствует приказу 262н (актуальный срок годности). В аптечке нет лекарств и ртутного градусника",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "7.2",
+        "text": "Сотрудники магазина обеспечены питьевой водой",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "7.3",
+        "text": "Имеется папка «Охрана труда» с полным перечнем документов. Недостающие — в комментарии",
+        "children": [
+          {
+            "num": "7.3а",
+            "text": "Положение о системе управления охраной труда"
+          },
+          {
+            "num": "7.3б",
+            "text": "Положение об управлении профессиональными рисками"
+          },
+          {
+            "num": "7.3в",
+            "text": "Положение об организации обучения по охране труда и проверки знаний"
+          },
+          {
+            "num": "7.3г",
+            "text": "Положение по обеспечению работников смывающими и обезвреживающими средствами"
+          },
+          {
+            "num": "7.3д",
+            "text": "Положение о расследовании и учёте несчастных случаев на производстве"
+          },
+          {
+            "num": "7.3е",
+            "text": "Порядок расследования и учёта микроповреждений (микротравм)"
+          },
+          {
+            "num": "7.3ж",
+            "text": "Положение о расследовании и учёте профессиональных заболеваний"
+          },
+          {
+            "num": "7.3з",
+            "text": "Политика в области управления профессиональными рисками"
+          },
+          {
+            "num": "7.3и",
+            "text": "Инструкция по проведению вводного инструктажа"
+          },
+          {
+            "num": "7.3к",
+            "text": "Инструкция №2: охрана труда при использовании ПК, копировальной и множительной техники"
+          },
+          {
+            "num": "7.3л",
+            "text": "Инструкция №3: охрана труда при эксплуатации бытовых и электронагревательных приборов"
+          },
+          {
+            "num": "7.3м",
+            "text": "Инструкция №4: охрана труда при эксплуатации электроустановок до 1000В"
+          },
+          {
+            "num": "7.3н",
+            "text": "Инструкция №5: охрана труда по безопасному передвижению в командировках"
+          },
+          {
+            "num": "7.3о",
+            "text": "Инструкция №6: охрана труда по оказанию первой помощи при несчастных случаях"
+          },
+          {
+            "num": "7.3п",
+            "text": "Инструкция №8: охрана труда для административно-управленческого персонала"
+          },
+          {
+            "num": "7.3р",
+            "text": "Инструкция №9: охрана труда для кассира/старшего кассира (только реСтор)"
+          },
+          {
+            "num": "7.3с",
+            "text": "Инструкция №12: охрана труда для продавца-кассира"
+          },
+          {
+            "num": "7.3т",
+            "text": "Инструкция №22: охрана труда при эксплуатации приставных лестниц и лестниц-стремянок"
+          },
+          {
+            "num": "7.3у",
+            "text": "ППИ №1 — работник магазина"
+          },
+          {
+            "num": "7.3ф",
+            "text": "Программа вводного инструктажа по охране труда"
+          },
+          {
+            "num": "7.3х",
+            "text": "Копия приказа о назначении ответственных по охране труда + протокол обучения"
+          },
+          {
+            "num": "7.3ц",
+            "text": "Карточки вводного и первичного инструктажа на каждого сотрудника"
+          },
+          {
+            "num": "7.3ч",
+            "text": "Карточки повторного инструктажа на всех сотрудников (март и сентябрь)"
+          },
+          {
+            "num": "7.3ш",
+            "text": "Карты СОУТ по каждой должности. Все сотрудники ознакомлены"
+          },
+          {
+            "num": "7.3щ",
+            "text": "Карты оценки профессиональных рисков по каждой должности. Все сотрудники ознакомлены"
+          }
+        ]
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "8. ПОЖАРНАЯ БЕЗОПАСНОСТЬ",
+    "items": [
+      {
+        "type": "item",
+        "num": "8.1",
+        "text": "Приказ о назначении ответственного за пожарную безопасность",
+        "children": [],
+        "subsection": "Раздел 1. Обязательная документация"
+      },
+      {
+        "type": "item",
+        "num": "8.2",
+        "text": "Приказ об установлении противопожарного режима",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.3",
+        "text": "Инструкция о мерах пожарной безопасности",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.4",
+        "text": "Положение о порядке обучения мерам ПБ",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.5",
+        "text": "Программа проведения вводного противопожарного инструктажа",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.6",
+        "text": "Программа проведения первичного противопожарного инструктажа",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.7",
+        "text": "Программа проведения повторного противопожарного инструктажа",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.8",
+        "text": "Диплом о профессиональной переподготовке по ПБ",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.9",
+        "text": "Расчёт категории по взрывопожарной и пожарной опасности. Наклейка на двери складского помещения с внешней стороны",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.10",
+        "text": "Журнал учёта огнетушителей",
+        "children": [],
+        "subsection": "Раздел 2. Журналы"
+      },
+      {
+        "type": "item",
+        "num": "8.11",
+        "text": "Журнал эксплуатации систем противопожарной защиты",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.12",
+        "text": "Журнал учёта противопожарных инструктажей",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.13",
+        "text": "Журнал противопожарного осмотра помещений перед их закрытием",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.14",
+        "text": "Наличие и актуальность плана эвакуации. Расстановка оборудования соответствует плану. На плане: печать юр. лица, дата и подпись ГД",
+        "children": [],
+        "subsection": "Раздел 3. Требования к помещениям"
+      },
+      {
+        "type": "item",
+        "num": "8.15",
+        "text": "Эвакуационные проходы и выходы свободны (включая проходы на складе между стеллажами)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.16",
+        "text": "Наличие и исправность устройств самозакрывания противопожарных дверей, замков, уплотнений и порогов",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.17",
+        "text": "Противопожарные двери не зафиксированы в открытом положении",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.18",
+        "text": "Расстояние от светильников до хранящихся товаров не менее 0,5 м",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.19",
+        "text": "К электрощиту свободный доступ, на расстоянии 1 метра от щита нет горючих материалов",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.20",
+        "text": "В подсобном помещении нет бытовых электроприборов (кулер, микроволновая печь, чайник и т.д.)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.21",
+        "text": "Письменное разрешение арендодателя на пользование бытовыми электроприборами (если есть)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.22",
+        "text": "Наличие и работоспособность знаков «ВЫХОД» и указателей направления движения",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.23",
+        "text": "Огнетушители исправны, актуальный срок годности, расположены согласно плану, в свободном доступе. Знак «Огнетушитель» присутствует",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.24",
+        "text": "Наклейка 001/Ответственный по ПБ находится на видном месте",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "8.25",
+        "text": "В местах расположения ручного пожарного извещателя — наклейка «Ручной пожарный извещатель»",
+        "children": []
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "9. ЭЛЕКТРОБЕЗОПАСНОСТЬ",
+    "items": [
+      {
+        "type": "item",
+        "num": "9.1",
+        "text": "Приказ о назначении ответственного за электрохозяйство",
+        "children": [],
+        "subsection": "Раздел 1. Обязательная документация"
+      },
+      {
+        "type": "item",
+        "num": "9.2",
+        "text": "Программа проведения инструктажа для неэлектротехнического персонала на 1 группу по ЭБ",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "9.3",
+        "text": "Удостоверение по электробезопасности + протокол (ответственный + заместитель)",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "9.4",
+        "text": "Технический отчёт замера сопротивления изоляции",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "9.5",
+        "text": "Журнал учёта присвоения 1 группы по электробезопасности неэлектротехническому персоналу",
+        "children": [],
+        "subsection": "Раздел 2. Журналы"
+      },
+      {
+        "type": "item",
+        "num": "9.6",
+        "text": "Спецификация/схема электрощита на внутренней стороне дверцы, с печатью и подписью ответственного за ЭБ",
+        "children": [],
+        "subsection": "Раздел 3. Требования"
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "10. ГО И ЧС",
+    "items": [
+      {
+        "type": "item",
+        "num": "10.1",
+        "text": "Приказ о назначении ответственного по ГО и ЧС и проведения инструктажей",
+        "children": [],
+        "subsection": "Раздел 1. Обязательная документация"
+      },
+      {
+        "type": "item",
+        "num": "10.2",
+        "text": "Программа вводного инструктажа по ГО и ЧС",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "10.3",
+        "text": "Инструкция по ГО и действиям при ЧС",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "10.4",
+        "text": "Удостоверение + протокол",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "10.5",
+        "text": "Журнал регистрации вводного инструктажа",
+        "children": [],
+        "subsection": "Раздел 2. Журналы"
+      },
+      {
+        "type": "item",
+        "num": "10.6",
+        "text": "Журнал учёта тренировок и мероприятий по ГО и ЧС",
+        "children": []
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "11. ДОКУМЕНТАЦИЯ ПО ПЕРСОНАЛУ",
+    "items": [
+      {
+        "type": "item",
+        "num": "11.1",
+        "text": "Имеется регламентированный перечень документов по персоналу. Недостающие — в комментарии",
+        "children": [
+          {
+            "num": "11.1а",
+            "text": "Приказ о назначении управляющего на должность"
+          },
+          {
+            "num": "11.1б",
+            "text": "Договор коллективной материальной ответственности (актуальный, подписан всеми + сотрудником офиса)"
+          },
+          {
+            "num": "11.1в",
+            "text": "Образцы должностных инструкций по каждой должности в магазине"
+          },
+          {
+            "num": "11.1г",
+            "text": "Доверенность (полная) на Управляющего магазином"
+          },
+          {
+            "num": "11.1д",
+            "text": "Доверенность (полная) на Старшего продавца"
+          },
+          {
+            "num": "11.1е",
+            "text": "Доверенности (работа с юр. лицами, приёмка ТМЦ) на сотрудников магазина"
+          },
+          {
+            "num": "11.1ж",
+            "text": "Реестр документов, подлежащих ознакомлению (ЛНА), подписанный всеми сотрудниками"
+          }
+        ]
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "12. ДОКУМЕНТЫ ПО БЕЗОПАСНОСТИ",
+    "items": [
+      {
+        "type": "item",
+        "num": "12.1",
+        "text": "Имеется регламентированный перечень документов по безопасности. Недостающие — в комментарии",
+        "children": [
+          {
+            "num": "12.1а",
+            "text": "Действия сотрудников при проверке магазина надзорными органами"
+          },
+          {
+            "num": "12.1б",
+            "text": "Контактные данные для связи с юр. отделом и СБ при проверке органами власти"
+          },
+          {
+            "num": "12.1в",
+            "text": "Контактные данные для связи со СБ при совершении преступлений против собственности"
+          },
+          {
+            "num": "12.1г",
+            "text": "МИ-9.1-01_1 Порядок действий при совершении преступлений против собственности (ред. 02.03)"
+          },
+          {
+            "num": "12.1д",
+            "text": "П-9.1-01_1 Порядок действий при проведении проверок органами власти (ред. 01.02.)"
+          },
+          {
+            "num": "12.1е",
+            "text": "Памятка магазинам. Действия при наступлении страхового случая"
+          },
+          {
+            "num": "12.1ж",
+            "text": "Страховой полис на товар в магазине + товар на внешнем складе (копия заверенная)"
+          }
+        ]
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "13. ДОКУМЕНТЫ УЧРЕДИТЕЛЬНЫЕ",
+    "items": [
+      {
+        "type": "item",
+        "num": "13.1",
+        "text": "Имеется регламентированный перечень учредительных документов. Недостающие — в комментарии",
+        "children": [
+          {
+            "num": "13.1а",
+            "text": "Устав (копия заверенная)"
+          },
+          {
+            "num": "13.1б",
+            "text": "Реквизитная карточка ООО «реСтор» / ООО «Носимо»"
+          },
+          {
+            "num": "13.1в",
+            "text": "Решение о назначении ГД Шубина А.Е. (+ документ о продлении — решение 15/2024 от 22.05.2024)"
+          },
+          {
+            "num": "13.1г",
+            "text": "Свидетельство (ОГРН, ИНН)"
+          },
+          {
+            "num": "13.1д",
+            "text": "Информационное письмо Росстата об учёте организации в ЕГРПО (копия заверенная)"
+          },
+          {
+            "num": "13.1е",
+            "text": "Выписка из ЕГРЮЛ"
+          },
+          {
+            "num": "13.1ж",
+            "text": "Права на воспроизведение музыки"
+          }
+        ]
+      }
+    ],
+    "subsection": null
+  },
+  {
+    "title": "14. ВНЕШНИЙ СКЛАД (если есть)",
+    "items": [
+      {
+        "type": "item",
+        "num": "14.1",
+        "text": "Дверь закрыта, замок на двери исправен",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "14.2",
+        "text": "Установлены камеры видеонаблюдения, есть доступ к просмотру/записи",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "14.3",
+        "text": "На внешний склад невозможно проникнуть через стены или потолок",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "14.4",
+        "text": "Освещение внешнего склада достаточно и исправно",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "14.5",
+        "text": "На внешнем складе порядок",
+        "children": []
+      },
+      {
+        "type": "item",
+        "num": "14.6",
+        "text": "Товар на внешнем складе расположен выше 12 см от пола",
+        "children": []
+      }
+    ],
+    "subsection": null
+  }
+]
+;
+
+// ── State ─────────────────────────────────────────────────────────────────
+const state = {}; // itemId -> {val: 'yes'|'no'|'np'|null, comment: '', children: {childId -> 'yes'|'no'|null}}
+
+function getItemId(secIdx, itemIdx) { return `${secIdx}_${itemIdx}`; }
+
+function initState() {
+  SECTIONS.forEach((sec, si) => {
+    sec.items.forEach((item, ii) => {
+      const id = getItemId(si, ii);
+      state[id] = { val: null, comment: '', children: {} };
+      item.children.forEach(ch => { state[id].children[ch.num] = null; });
+    });
+  });
+}
+
+// ── Score logic ───────────────────────────────────────────────────────────
+function getItemScore(id, item) {
+  const s = state[id];
+  if (item.children.length > 0) {
+    const vals = item.children.map(ch => s.children[ch.num]);
+    if (vals.some(v => v === 'no')) return 'no';
+    if (vals.every(v => v === 'yes')) return 'yes';
+    return null;
+  }
+  return s.val;
+}
+
+function calcScores() {
+  let done = 0, total = 0;
+  SECTIONS.forEach((sec, si) => {
+    sec.items.forEach((item, ii) => {
+      const id = getItemId(si, ii);
+      const score = getItemScore(id, item);
+      if (score === 'yes') done++;
+      if (score !== null) total++;
+    });
+  });
+  return { done, total, all: countItems() };
+}
+
+function countItems() {
+  return SECTIONS.reduce((acc, sec) => acc + sec.items.length, 0);
+}
+
+function updateScoreBar() {
+  const all = countItems();
+  const { done, total } = calcScores();
+  const pct = all > 0 ? Math.round(done / all * 100) : 0;
+  document.getElementById('score-done').textContent = done;
+  document.getElementById('score-total').textContent = all;
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+// ── Render ────────────────────────────────────────────────────────────────
+function render() {
+  const main = document.getElementById('main-content');
+  main.innerHTML = '';
+
+  SECTIONS.forEach((sec, si) => {
+    const secDone = sec.items.filter((item, ii) => getItemScore(getItemId(si, ii), item) === 'yes').length;
+    const secTotal = sec.items.length;
+
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+    secEl.id = `sec-${si}`;
+
+    // Section header
+    const [secNum, ...secRest] = sec.title.split('. ');
+    secEl.innerHTML = `
+      <div class="section-header" onclick="toggleSection(${si})">
+        <span class="section-num">${secNum}</span>
+        <span class="section-name">${secRest.join('. ')}</span>
+        <span class="badge-score">${secDone}/${secTotal}</span>
+        <span class="section-chevron">›</span>
+      </div>
+      <div class="section-body" id="secbody-${si}"></div>
+    `;
+    main.appendChild(secEl);
+
+    const body = secEl.querySelector(`#secbody-${si}`);
+
+    sec.items.forEach((item, ii) => {
+      const id = getItemId(si, ii);
+      const s = state[id];
+      const hasChildren = item.children.length > 0;
+      const autoScore = hasChildren ? getItemScore(id, item) : null;
+
+      // Subsection header
+      if (item.subsection) {
+        const subEl = document.createElement('div');
+        subEl.className = 'subsection-header';
+        subEl.textContent = item.subsection;
+        body.appendChild(subEl);
+      }
+
+      const itemEl = document.createElement('div');
+      itemEl.className = 'item';
+      itemEl.id = `item-${id}`;
+
+      // Vote buttons or auto badge
+      let voteHTML = '';
+      if (hasChildren) {
+        const cls = autoScore === 'yes' ? 'yes' : autoScore === 'no' ? 'no' : 'empty';
+        const label = autoScore === 'yes' ? '✓ Да' : autoScore === 'no' ? '✗ Нет' : '—';
+        voteHTML = `<div class="auto-wrap"><span class="auto-badge ${cls}">${label}</span></div>`;
+      } else {
+        const yA = s.val==='yes'?'active':'', nA = s.val==='no'?'active':'', npA = s.val==='np'?'active':'';
+        voteHTML = `<div class="vote-btns">
+          <button class="vbtn yes ${yA}" onclick="setVal('${id}',${si},'yes',event)">Да</button>
+          <button class="vbtn no ${nA}" onclick="setVal('${id}',${si},'no',event)">Нет</button>
+          <button class="vbtn np ${npA}" onclick="setVal('${id}',${si},'np',event)">НП</button>
+        </div>`;
+      }
+
+      // Children
+      let childrenHTML = '';
+      if (hasChildren) {
+        const childrenOpen = item.children.some(ch => s.children[ch.num] !== null);
+        const ctOpen = childrenOpen ? 'open' : '';
+        const listHidden = childrenOpen ? '' : 'hidden';
+        const chRows = item.children.map(ch => {
+          const cv = s.children[ch.num];
+          const yA = cv==='yes'?'active':'', nA = cv==='no'?'active':'';
+          return `<div class="child-item">
+            <div class="child-indicator"></div>
+            <div class="child-content">
+              <div class="child-num">${ch.num}</div>
+              <div class="child-text">${ch.text}</div>
+            </div>
+            <div class="child-vote">
+              <button class="cvbtn yes ${yA}" onclick="setChild('${id}',${si},'${ch.num}','yes',event)">Да</button>
+              <button class="cvbtn no ${nA}" onclick="setChild('${id}',${si},'${ch.num}','no',event)">Нет</button>
+            </div>
+          </div>`;
+        }).join('');
+
+        childrenHTML = `
+          <div class="children-toggle ${ctOpen}" id="ct-${id}" onclick="toggleChildren('${id}')">
+            <span class="ct-icon">›</span>
+            <span>${item.children.length} пунктов для проверки</span>
+          </div>
+          <div class="children-list ${listHidden}" id="cl-${id}">${chRows}</div>`;
+      }
+
+      // Comment
+      const hasComment = s.comment.length > 0;
+      const commentHTML = `
+        <div class="comment-toggle" onclick="toggleComment('${id}')" id="cmtgl-${id}">${hasComment ? '▾ Комментарий' : '+ добавить комментарий'}</div>
+        <div class="comment-wrap" id="cmwrap-${id}" style="${hasComment?'':'display:none'}">
+          <textarea class="comment-input" placeholder="Комментарий к пункту…" 
+            oninput="setComment('${id}',this.value)" id="cmt-${id}">${s.comment}</textarea>
+        </div>`;
+
+      itemEl.innerHTML = `
+        <div class="item-row">
+          <div class="item-main">
+            <div class="item-num">${item.num}</div>
+            <div class="item-text">${item.text}</div>
+          </div>
+          ${voteHTML}
+        </div>
+        ${childrenHTML}
+        ${commentHTML}
+      `;
+
+      body.appendChild(itemEl);
+    });
+  });
+
+  updateScoreBar();
+}
+
+// ── Interactions ──────────────────────────────────────────────────────────
+function toggleSection(si) {
+  document.getElementById(`sec-${si}`).classList.toggle('collapsed');
+}
+
+function setVal(id, si, val, e) {
+  e.stopPropagation();
+  state[id].val = state[id].val === val ? null : val;
+  rerenderItem(id, si);
+  updateScoreBar();
+  updateSectionBadge(si);
+}
+
+function setChild(id, si, childNum, val, e) {
+  e.stopPropagation();
+  state[id].children[childNum] = state[id].children[childNum] === val ? null : val;
+  rerenderItem(id, si);
+  updateScoreBar();
+  updateSectionBadge(si);
+}
+
+function setComment(id, val) {
+  state[id].comment = val;
+}
+
+function toggleComment(id) {
+  const wrap = document.getElementById(`cmwrap-${id}`);
+  const tgl = document.getElementById(`cmtgl-${id}`);
+  const visible = wrap.style.display !== 'none';
+  wrap.style.display = visible ? 'none' : 'block';
+  if (!visible) tgl.textContent = '▾ Комментарий';
+}
+
+function toggleChildren(id) {
+  const list = document.getElementById(`cl-${id}`);
+  const toggle = document.getElementById(`ct-${id}`);
+  list.classList.toggle('hidden');
+  toggle.classList.toggle('open');
+}
+
+function rerenderItem(id, si) {
+  // Find item index
+  const [siStr, iiStr] = id.split('_');
+  const item = SECTIONS[parseInt(siStr)].items[parseInt(iiStr)];
+  const s = state[id];
+  const hasChildren = item.children.length > 0;
+  const autoScore = hasChildren ? getItemScore(id, item) : null;
+
+  if (hasChildren) {
+    // Update auto badge
+    const wrap = document.querySelector(`#item-${id} .auto-wrap`);
+    if (wrap) {
+      const cls = autoScore === 'yes' ? 'yes' : autoScore === 'no' ? 'no' : 'empty';
+      const label = autoScore === 'yes' ? '✓ Да' : autoScore === 'no' ? '✗ Нет' : '—';
+      wrap.innerHTML = `<span class="auto-badge ${cls}">${label}</span>`;
+    }
+    // Update child buttons
+    item.children.forEach(ch => {
+      const cv = s.children[ch.num];
+      const btns = document.querySelectorAll(`#item-${id} .cvbtn`);
+      btns.forEach(btn => {
+        if (btn.textContent === 'Да' && btn.closest('.child-item')) {
+          // find correct child
+        }
+      });
+      // Re-render child buttons by finding them
+      const childItems = document.querySelectorAll(`#cl-${id} .child-item`);
+      childItems.forEach(ci => {
+        const numEl = ci.querySelector('.child-num');
+        if (numEl && numEl.textContent === ch.num) {
+          const cv2 = s.children[ch.num];
+          ci.querySelectorAll('.cvbtn').forEach(b => {
+            b.classList.remove('active');
+            if ((b.textContent==='Да' && cv2==='yes') || (b.textContent==='Нет' && cv2==='no')) b.classList.add('active');
+          });
+        }
+      });
+    });
+  } else {
+    // Update vote buttons
+    const btns = document.querySelectorAll(`#item-${id} .vbtn`);
+    btns.forEach(btn => {
+      btn.classList.remove('active');
+      if ((btn.classList.contains('yes') && s.val==='yes') ||
+          (btn.classList.contains('no')  && s.val==='no') ||
+          (btn.classList.contains('np')  && s.val==='np')) btn.classList.add('active');
+    });
+  }
+}
+
+function updateSectionBadge(si) {
+  const sec = SECTIONS[si];
+  const done = sec.items.filter((item, ii) => getItemScore(getItemId(si, ii), item) === 'yes').length;
+  const badge = document.querySelector(`#sec-${si} .badge-score`);
+  if (badge) badge.textContent = `${done}/${sec.items.length}`;
+}
+
+// ── Summary modal ─────────────────────────────────────────────────────────
+function openSummary() {
+  const body = document.getElementById('modal-body');
+  let html = '';
+
+  SECTIONS.forEach((sec, si) => {
+    const done = sec.items.filter((item, ii) => getItemScore(getItemId(si, ii), item) === 'yes').length;
+    const total = sec.items.length;
+    const pct = Math.round(done / total * 100);
+    const cls = pct === 100 ? 'good' : pct < 50 ? 'bad' : '';
+    html += `<div class="modal-row">
+      <span>${sec.title}</span>
+      <span class="modal-row-score ${cls}">${done}/${total} · ${pct}%</span>
+    </div>`;
+  });
+
+  const all = countItems();
+  const { done } = calcScores();
+  const pct = Math.round(done / all * 100);
+
+  html += `<div class="modal-total">
+    <span class="modal-total-label">Общий результат</span>
+    <span class="modal-total-score">${done}/${all} · ${pct}%</span>
+  </div>`;
+
+  // Issues list
+  const issues = [];
+  SECTIONS.forEach((sec, si) => {
+    sec.items.forEach((item, ii) => {
+      const id = getItemId(si, ii);
+      const score = getItemScore(id, item);
+      const comment = state[id].comment;
+      if (score === 'no') issues.push(`${item.num} — ${item.text.substring(0,60)}…`);
+    });
+  });
+
+  if (issues.length > 0) {
+    html += `<div style="margin-top:14px">
+      <div class="modal-sec-title" style="color:var(--no)">⚠ Нарушения (${issues.length})</div>
+      ${issues.map(i => `<div class="modal-row"><span style="font-size:.82rem;color:var(--text2)">${i}</span></div>`).join('')}
+    </div>`;
+  }
+
+  body.innerHTML = html;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+
+function closeSummary() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+function closeIfOutside(e) {
+  if (e.target === document.getElementById('modal-overlay')) closeSummary();
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+document.getElementById('meta-date').valueAsDate = new Date();
+initState();
+render();
+// Collapse all sections by default except first
+document.querySelectorAll('.section').forEach((el, i) => { if (i > 0) el.classList.add('collapsed'); });
+</script>
+</body>
+</html>
