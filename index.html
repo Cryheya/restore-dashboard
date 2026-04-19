@@ -133,6 +133,8 @@
   .chip:hover{border-color:var(--muted);}
   .chip.selected{color:#fff;border-color:transparent;}
   .chip-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+  .filters-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start;}
+  .filters-row > div{min-width:0;}
 
   /* TWO-COL */
   .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -234,6 +236,9 @@
   .ba{background:var(--aplus);} .baa{background:var(--a);} .bbb{background:var(--b);} .bcc{background:var(--c);}
   .sa::before{background:var(--aplus);} .saa::before{background:var(--a);}
   .sb::before{background:var(--b);}    .sc::before{background:var(--c);}
+  @media (max-width: 900px){
+    .filters-row{grid-template-columns:1fr;}
+  }
 
   .footer{text-align:center;padding:14px;color:var(--muted);font-size:9px;letter-spacing:1px;text-transform:uppercase;border-top:1px solid var(--border);}
 </style>
@@ -330,6 +335,15 @@ function sortArr(arr, key, dir) {
   });
 }
 function esc(s){ return String(s).replace(/'/g,"\\'"); }
+function restoreSearchFocus(containerId, value) {
+  const root = document.getElementById(containerId);
+  if (!root) return;
+  const input = root.querySelector('input[type="text"]');
+  if (!input) return;
+  input.focus();
+  const pos = typeof value === 'string' ? value.length : input.value.length;
+  input.setSelectionRange(pos, pos);
+}
 
 // ── CHIPS (collapsible) ──
 function buildChips(g) {
@@ -460,8 +474,7 @@ function buildPanel(g) {
     <div class="stat ${c.st}"><div class="sn ${c.cc}">${avgS}%</div><div class="sl">Средний СБП</div></div>
   </div>
 
-  ${rdBlock}
-  <div id="chips-wrap-${g}">${buildChips(g)}</div>
+  ${rdBlock ? `<div class="filters-row"><div id="rd-wrap-${g}">${rdBlock}</div><div id="chips-wrap-${g}">${buildChips(g)}</div></div>` : `<div id="chips-wrap-${g}">${buildChips(g)}</div>`}
 
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
     <button class="reset-btn" onclick="resetFilters('${g}')">✕ Сбросить фильтры</button>
@@ -490,7 +503,7 @@ function refresh(g) {
   document.getElementById('chips-wrap-'+g).innerHTML = buildChips(g);
   // rebuild RD chips if present
   const rdEl = document.getElementById('rd-wrap-'+g);
-  if (rdEl) rdEl.outerHTML = `<div id="rd-wrap-${g}">${buildRDChips(g, STATE[g], 'grade')}</div>`;
+  if (rdEl) rdEl.innerHTML = buildRDChips(g, STATE[g], 'grade');
 }
 
 // ── EVENTS ──
@@ -503,25 +516,7 @@ function toggleChip(g, store) {
 
 function toggleChips(g) {
   STATE[g].chipsOpen = !STATE[g].chipsOpen;
-  document.getElementById('chips-wrap-'+g).innerHTML = (() => {
-    const c = CFG[g], st = STATE[g];
-    const stores = [...new Set(ALL_STAFF[g].map(p=>p.м))].sort();
-    const selCount = st.selStores.size;
-    const open = st.chipsOpen;
-    const chips = stores.map(s => {
-      const sel = st.selStores.has(s);
-      return `<span class="chip ${sel?'selected':''}"
-        style="${sel?`background:${c.colHex};border-color:${c.colHex};`:''}"
-        onclick="toggleChip('${g}','${esc(s)}')"
-      ><span class="chip-dot" style="${sel?'background:#fff':'background:'+c.colHex}"></span>${s}</span>`;
-    }).join('');
-    const selLabel = selCount > 0 ? ` · выбрано: ${selCount}` : '';
-    return `<div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none" onclick="toggleChips('${g}')">
-      <div class="chips-label" style="margin-bottom:0">Фильтр по магазинам${selLabel}</div>
-      <span style="font-size:11px;color:var(--muted);font-weight:700;padding:2px 6px">${open?'▲ скрыть':'▼ показать'}</span>
-    </div>
-    ${open ? `<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px">${chips}</div>` : ''}`;
-  })();
+  document.getElementById('chips-wrap-'+g).innerHTML = buildChips(g);
 }
 
 function setShowPerf(g, val) {
@@ -532,6 +527,7 @@ function setShowPerf(g, val) {
 function onSearch(g, val) {
   STATE[g].search = val;
   document.getElementById('perf-'+g).innerHTML = renderPerf(g);
+  restoreSearchFocus('perf-'+g, val);
 }
 
 function sortStores(g, key) {
@@ -721,8 +717,7 @@ function buildAllPanel() {
         <div class="legend-item"><div class="legend-dot" style="background:rgba(224,112,0,.4)"></div>Почти</div>
       </div>
     </div>
-    ${rdBlock}
-    <div id="all-chips-wrap-${g}">${buildAllChips(g)}</div>
+    ${rdBlock ? `<div class="filters-row"><div>${rdBlock}</div><div id="all-chips-wrap-${g}">${buildAllChips(g)}</div></div>` : `<div id="all-chips-wrap-${g}">${buildAllChips(g)}</div>`}
     <div style="margin-bottom:6px;"><button class="reset-btn" onclick="resetAllFilters('${g}')">✕ Сброс</button></div>
     <div class="card" style="margin-bottom:24px;">
       <div id="all-table-${g}">${renderAllTable(g)}</div>
@@ -742,6 +737,7 @@ function toggleAllChip(g, store) {
 function onAllSearch(g, val) {
   ALL_STATE[g].search = val;
   document.getElementById('all-table-'+g).innerHTML = renderAllTable(g);
+  restoreSearchFocus('all-table-'+g, val);
 }
 
 function allToggleRD(g, rd) {
@@ -1051,6 +1047,7 @@ function onHKSearch(val) {
     <div class="hk-head"><div>#</div><div>Сотрудник</div><div>Оборот</div><div>СБП</div><div>АТА</div><div>Грейд</div><div>Статус</div></div>
     ${rows}`;
   })();
+  restoreSearchFocus('hk-table', val);
 }
 
 function hkToggleRD(rd) {
