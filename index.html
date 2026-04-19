@@ -35,6 +35,66 @@
   .tab[data-g="c"].active{color:var(--c);}
   .tab[data-g="near"].active{color:var(--warn);}
   .tab[data-g="all"].active{color:#5060c0;}
+  .tab[data-g="hk"].active{color:#c0392b;}
+  .tab[data-g="settings"].active{color:#444;}
+
+  /* SETTINGS PAGE */
+  .settings-wrap{max-width:600px;margin:0 auto;padding:8px 0 40px;}
+  .settings-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:20px;}
+  .settings-card-head{padding:14px 20px;border-bottom:1px solid var(--border);background:var(--surface2);}
+  .settings-card-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:var(--text);}
+  .settings-card-sub{font-size:10px;color:var(--muted);margin-top:2px;letter-spacing:.5px;}
+  .settings-row{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:16px;}
+  .settings-row:last-child{border-bottom:none;}
+  .settings-label{flex:1;}
+  .settings-label-title{font-weight:700;font-size:12px;margin-bottom:2px;}
+  .settings-label-desc{font-size:10px;color:var(--muted);}
+  .settings-control{display:flex;align-items:center;gap:8px;}
+  .threshold-input{width:72px;padding:7px 10px;border:1px solid var(--border);border-radius:5px;font-family:'Manrope',sans-serif;font-size:13px;font-weight:700;text-align:center;outline:none;transition:border-color .15s;}
+  .threshold-input:focus{border-color:var(--aplus);}
+  .threshold-unit{font-size:11px;font-weight:700;color:var(--muted);}
+  .radio-group{display:flex;gap:6px;}
+  .radio-btn{padding:6px 14px;border:1px solid var(--border);border-radius:5px;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s;}
+  .radio-btn:hover{border-color:var(--muted);color:var(--text);}
+  .radio-btn.active{background:var(--text);color:#fff;border-color:var(--text);}
+  .settings-preview{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:14px 20px;margin-top:4px;}
+  .preview-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);}
+  .preview-row:last-child{border-bottom:none;}
+  .preview-grade{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;}
+  .preview-nums{font-size:11px;color:var(--muted);}
+  .preview-nums b{font-weight:800;}
+  .apply-btn{width:100%;padding:12px;background:var(--text);color:#fff;border:none;border-radius:6px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;transition:opacity .15s;margin-top:16px;}
+  .apply-btn:hover{opacity:.85;}
+
+  /* MEDALS */
+  .medal{display:inline-flex;align-items:center;gap:3px;font-size:8px;font-weight:800;letter-spacing:.5px;padding:2px 8px 2px 5px;border-radius:3px;vertical-align:middle;margin-left:4px;}
+  .medal-1{background:rgba(176,136,0,.15);color:#8a6800;border:1px solid rgba(176,136,0,.25);}
+  .medal-2{background:rgba(96,112,160,.12);color:#4a5680;border:1px solid rgba(96,112,160,.25);}
+  .medal-icon{font-size:10px;}
+
+  /* RD FILTER */
+  .rd-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .rd-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);width:100%;margin-bottom:4px;}
+  .rd-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);font-size:10px;font-weight:600;cursor:pointer;transition:all .15s;user-select:none;white-space:nowrap;}
+  .rd-chip:hover{border-color:var(--muted);}
+  .rd-chip.selected{background:var(--text);color:#fff;border-color:var(--text);}
+
+  /* ГОНКОНГ TABLE */
+  .hk-head{display:grid;grid-template-columns:36px 1fr 80px 68px 68px 68px 90px;gap:6px;padding:7px 16px;border-bottom:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .hk-head div:not(:nth-child(2)){text-align:right;}
+  .hk-row{display:grid;grid-template-columns:36px 1fr 80px 68px 68px 68px 90px;align-items:center;gap:6px;padding:7px 16px;border-bottom:1px solid var(--border);transition:background .1s;}
+  .hk-row:last-child{border-bottom:none;}
+  .hk-row:hover{background:var(--surface2);}
+  .hk-row.hk-perf{background:rgba(192,57,43,.04);}
+  .hk-row.hk-perf:hover{background:rgba(192,57,43,.09);}
+  .hk-rank-num{font-family:'Bebas Neue',sans-serif;font-size:18px;text-align:right;line-height:1;}
+  .hk-r1{color:#c0392b;} .hk-r2{color:#7f8c8d;} .hk-r3{color:#8f4a14;}
+  .hk-name{font-weight:700;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .hk-store{color:var(--muted);font-size:8.5px;}
+  .hk-val{text-align:right;font-size:11px;font-weight:600;}
+  .hk-badge-wrap{text-align:right;}
+  .hk-grade-badge{display:inline-block;font-size:8px;font-weight:800;letter-spacing:1px;padding:2px 7px;border-radius:3px;}
+  .hk-perf-badge{display:inline-block;font-size:8px;font-weight:800;letter-spacing:.5px;padding:2px 7px;border-radius:3px;background:rgba(192,57,43,.12);color:#c0392b;border:1px solid rgba(192,57,43,.2);}
 
   /* MAIN */
   .main{padding:20px 32px 40px;max-width:1100px;margin:0 auto;}
@@ -192,6 +252,8 @@
   <button class="tab" data-g="c"    onclick="showTab('c',this)">Грейд C</button>
   <button class="tab" data-g="near" onclick="showTab('near',this)">⚠ Почти перформеры</button>
   <button class="tab" data-g="all"  onclick="showTab('all',this)">Все продавцы</button>
+  <button class="tab" data-g="hk"   onclick="showTab('hk',this)">🏆 Гонконг</button>
+  <button class="tab" data-g="settings" onclick="showTab('settings',this)">⚙ Настройки</button>
 </div>
 
 <div class="main">
@@ -201,6 +263,8 @@
   <div class="panel" id="p-c"></div>
   <div class="panel" id="p-near"></div>
   <div class="panel" id="p-all"></div>
+  <div class="panel" id="p-hk"></div>
+  <div class="panel" id="p-settings"></div>
 </div>
 
 <div class="footer">restore electronics</div>
@@ -223,10 +287,34 @@ const CFG={
   c:    {col:'var(--c)',    colHex:'#bb2a4c',bar:'bcc',tag:'tc',st:'sc',cc:'cc2'},
 };
 
+// ── THRESHOLDS (изменяются на странице настроек) ──
+const THRESHOLDS = {
+  sbp: 40,       // минимальная доля СБП %
+  ata: 60,       // минимальная АТА %
+  revMode: 'auto', // 'auto' = средний по грейду | 'manual' = ручной ввод
+  revManual: {},   // {aplus: 20, a: 12, b: 9, c: 5} — заполняется вручную
+};
+
+function getRevThreshold(g) {
+  if (THRESHOLDS.revMode === 'manual' && THRESHOLDS.revManual[g] != null) {
+    return THRESHOLDS.revManual[g];
+  }
+  return PERF[g]?.avg_rev ?? 0;
+}
+
+function isPerformer(p, g) {
+  return p.с >= THRESHOLDS.sbp && p.а >= THRESHOLDS.ata && p.о >= getRevThreshold(g);
+}
+
+function isNearMiss(p, g) {
+  const fails = (p.с < THRESHOLDS.sbp ? 1 : 0) + (p.а < THRESHOLDS.ata ? 1 : 0) + (p.о < getRevThreshold(g) ? 1 : 0);
+  return fails === 1 && !isPerformer(p, g);
+}
+
 // ── STATE ──
 const STATE = {};
 ['aplus','a','b','c'].forEach(g => {
-  STATE[g] = { selStores: new Set(), search: '', storeSort: {key:'q',dir:-1}, showPerf: 'all', chipsOpen: false };
+  STATE[g] = { selStores: new Set(), selRD: null, search: '', storeSort: {key:'q',dir:-1}, showPerf: 'all', chipsOpen: false };
 });
 
 // ── HELPERS ──
@@ -272,28 +360,30 @@ function renderPerf(g) {
   let list = ALL_STAFF[g].filter(p => {
     const ms = st.selStores.size === 0 || st.selStores.has(p.м);
     const ss = !st.search || p.н.toLowerCase().includes(st.search.toLowerCase());
-    const ps = st.showPerf === 'all' || p.p;
+    const perf = isPerformer(p, g);
+    const ps = st.showPerf === 'all' || perf;
     return ms && ss && ps;
   });
   list = [...list].sort((a,b) => a.р - b.р);
 
-  const perfCount = list.filter(p=>p.p).length;
+  const perfCount = list.filter(p => isPerformer(p, g)).length;
   const shown = list.length, totalCount = ALL_STAFF[g].length;
   const countHtml = `<span class="result-count">Показано: ${shown} из ${totalCount} · перформеров: ${perfCount}</span>`;
 
   const rows = list.length === 0
     ? `<div class="no-results">Нет сотрудников по выбранному фильтру</div>`
     : list.map(p => {
-        const rowCls = p.p ? 'is-perf' : p.nm ? 'is-near' : '';
-        const badge = p.p
-          ? `<span class="badge-perf">★</span>`
-          : p.nm ? `<span class="badge-near">↑</span>` : '';
-        return `<div class="pr ${rowCls}" style="${p.p?'border-left:3px solid '+c.colHex+';padding-left:13px':''}">
+        const perf = isPerformer(p, g);
+        const near = !perf && isNearMiss(p, g);
+        const rowCls = perf ? 'is-perf' : near ? 'is-near' : '';
+        const badge = perf ? `<span class="badge-perf">★</span>` : near ? `<span class="badge-near">↑</span>` : '';
+        const medal = perf ? medalBadge(p, g) : '';
+        return `<div class="pr ${rowCls}" style="${perf?'border-left:3px solid '+c.colHex+';padding-left:13px':''}">
           ${rk(p.р)}
-          <div><div class="pn">${p.н} ${badge}</div><div class="ps">${p.м}</div></div>
+          <div><div class="pn">${p.н} ${badge}${medal}</div><div class="ps">${p.м}</div></div>
           <div class="pv"><span class="v" style="color:${c.col}">${p.о.toFixed(1)} млн</span><span class="l">Оборот</span></div>
-          <div class="pv"><span class="v" style="${p.с<40?'color:var(--c)':''}">${p.с.toFixed(1)}%</span><span class="l">СБП</span></div>
-          <div class="pv"><span class="v" style="${p.а<60?'color:var(--c)':''}">${p.а.toFixed(1)}%</span><span class="l">АТА</span></div>
+          <div class="pv"><span class="v" style="${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</span><span class="l">СБП</span></div>
+          <div class="pv"><span class="v" style="${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</span><span class="l">АТА</span></div>
         </div>`;
       }).join('');
 
@@ -355,10 +445,10 @@ function hexToRgb(hex) {
 function buildPanel(g) {
   const c = CFG[g], {avg_rev} = PERF[g], total = TOTAL[g];
   const staff = ALL_STAFF[g] || [];
-  const perfCount = staff.filter(p=>p.p).length;
+  const perfCount = staff.filter(p => isPerformer(p,g)).length;
   const avgS = staff.length ? (staff.reduce((s,p)=>s+p.с,0)/staff.length).toFixed(1) : '—';
-  const avgA = staff.length ? (staff.reduce((s,p)=>s+p.а,0)/staff.length).toFixed(1) : '—';
   const storeNote = g==='b'?`топ-10 из ${total}`:`все ${total} магазина`;
+  const rdBlock = buildRDChips(g, STATE[g], 'grade');
 
   return `
   <div class="ph"><div class="ph-title">СОТРУДНИКИ ГРЕЙДА</div><span class="ph-tag ${c.tag}">ГРЕЙД ${LABEL[g]}</span></div>
@@ -370,6 +460,7 @@ function buildPanel(g) {
     <div class="stat ${c.st}"><div class="sn ${c.cc}">${avgS}%</div><div class="sl">Средний СБП</div></div>
   </div>
 
+  ${rdBlock}
   <div id="chips-wrap-${g}">${buildChips(g)}</div>
 
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
@@ -380,12 +471,12 @@ function buildPanel(g) {
     <div class="card">
       <div class="ch">
         <div class="ct ${c.cc}">ВСЕ СОТРУДНИКИ · ${staff.length} ЧЕЛ.</div>
-        <div class="thresholds"><span class="thr">★ Перформер</span><span class="thr">↑ Почти</span></div>
+        <div class="thresholds"><span class="thr">★ Перформер</span><span class="thr">🏅 Медаль</span><span class="thr">↑ Почти</span></div>
       </div>
       <div id="perf-${g}">${renderPerf(g)}</div>
     </div>
     <div class="card">
-      <div class="ch"><div class="ct ${c.cc}">МАГАЗИНЫ ПО ВЫРУЧКЕ Q1</div><div class="cb">${storeNote}</div></div>
+      <div class="ch"><div class="ct ${c.cc}">МАГАЗИНЫ ПО ВЫРУЧКЕ</div><div class="cb">${storeNote}</div></div>
       <div id="stores-${g}">${renderStores(g)}</div>
       <div class="store-hint">← клик на магазин добавляет/убирает из фильтра</div>
     </div>
@@ -397,6 +488,9 @@ function refresh(g) {
   document.getElementById('perf-'+g).innerHTML = renderPerf(g);
   document.getElementById('stores-'+g).innerHTML = renderStores(g);
   document.getElementById('chips-wrap-'+g).innerHTML = buildChips(g);
+  // rebuild RD chips if present
+  const rdEl = document.getElementById('rd-wrap-'+g);
+  if (rdEl) rdEl.outerHTML = `<div id="rd-wrap-${g}">${buildRDChips(g, STATE[g], 'grade')}</div>`;
 }
 
 // ── EVENTS ──
@@ -452,9 +546,8 @@ function resetFilters(g) {
   STATE[g].search = '';
   STATE[g].showPerf = 'all';
   STATE[g].chipsOpen = false;
-  refresh(g);
-  const inp = document.querySelector(`#p-${g} input[type=text]`);
-  if (inp) inp.value = '';
+  STATE[g].selRD = null;
+  document.getElementById('p-'+g).innerHTML = buildPanel(g);
 }
 
 // ── NEAR MISS ──
@@ -491,6 +584,7 @@ function buildNearMiss() {
 // ── LOAD DATA FROM data.json ──
 let PERF={}, STORES={}, NEAR={}, ALL_STAFF={};
 let TOTAL={aplus:0,a:0,b:0,c:0};
+let HONGKONG=[], RD_MAP={}, MEDAL_TIERS={};
 
 async function loadData() {
   try {
@@ -500,6 +594,9 @@ async function loadData() {
     const quarter = d.quarter || '';
     const period  = d.period  || '';
     TOTAL = d.total_stores || TOTAL;
+    HONGKONG = d.hongkong || [];
+    RD_MAP = d.rd_map || {};
+    MEDAL_TIERS = d.medal_tiers || {};
     ['aplus','a','b','c'].forEach(g => {
       PERF[g]      = { avg_rev: d.avgs[g], list: d.performers[g] || [] };
       STORES[g]    = d.stores[g] || [];
@@ -516,6 +613,7 @@ async function loadData() {
     });
     document.getElementById('p-near').innerHTML = buildNearMiss();
     document.getElementById('p-all').innerHTML  = buildAllPanel();
+    document.getElementById('p-hk').innerHTML   = buildHongkong();
   } catch(e) {
     document.getElementById('loading').innerHTML =
       '<div style="text-align:center;padding:40px;color:#bb2a4c">' +
@@ -527,10 +625,10 @@ async function loadData() {
 }
 loadData();
 const ALL_STATE = {
-  aplus: { selStores: new Set(), search: '' },
-  a:     { selStores: new Set(), search: '' },
-  b:     { selStores: new Set(), search: '' },
-  c:     { selStores: new Set(), search: '' },
+  aplus: { selStores: new Set(), selRD: null, search: '' },
+  a:     { selStores: new Set(), selRD: null, search: '' },
+  b:     { selStores: new Set(), selRD: null, search: '' },
+  c:     { selStores: new Set(), selRD: null, search: '' },
 };
 
 function allStores(g) {
@@ -556,27 +654,28 @@ function renderAllTable(g) {
   const st = ALL_STATE[g], c = CFG[g];
   let list = ALL_STAFF[g].filter(p => {
     const ms = st.selStores.size === 0 || st.selStores.has(p.м);
+    const rs = !st.selRD || (RD_MAP[st.selRD]||[]).includes(p.м);
     const ss = !st.search || p.н.toLowerCase().includes(st.search.toLowerCase());
-    return ms && ss;
+    return ms && rs && ss;
   });
 
   const total = ALL_STAFF[g].length;
   const shown = list.length;
-  const perfCount = list.filter(p => p.p).length;
+  const perfCount = list.filter(p => isPerformer(p,g)).length;
   const countHtml = `<span class="result-count">Показано: ${shown} из ${total} · перформеров: ${perfCount}</span>`;
 
   const rows = list.map(p => {
-    const badgeHtml = p.p
-      ? `<span class="badge-perf">★ Перформер</span>`
-      : p.nm
-        ? `<span class="badge-near">↑ Почти</span>`
-        : `<span class="badge-none">—</span>`;
-    return `<div class="all-row ${p.p?'is-perf':p.nm?'is-near':''}">
+    const perf = isPerformer(p,g); const near = !perf && isNearMiss(p,g);
+    const medal = perf ? medalBadge(p, g) : '';
+    const badgeHtml = perf
+      ? `<span class="badge-perf">★ Перформер</span>${medal}`
+      : near ? `<span class="badge-near">↑ Почти</span>` : `<span class="badge-none">—</span>`;
+    return `<div class="all-row ${perf?'is-perf':near?'is-near':''}">
       <div class="all-rank">${p.р}</div>
       <div><div class="all-name">${p.н}</div><div class="all-store">${p.м}</div></div>
       <div class="all-val" style="color:${c.colHex};text-align:right">${p.о.toFixed(1)} млн</div>
-      <div class="all-val ${p.с<40?'fail':''}" style="text-align:right;${p.с<40?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
-      <div class="all-val ${p.а<60?'fail':''}" style="text-align:right;${p.а<60?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
+      <div class="all-val" style="text-align:right;${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
+      <div class="all-val" style="text-align:right;${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
       <div class="all-badge">${badgeHtml}</div>
     </div>`;
   }).join('') || `<div class="no-results">Нет сотрудников по выбранному фильтру</div>`;
@@ -596,11 +695,10 @@ function renderAllTable(g) {
 function buildAllPanel() {
   const grades = ['aplus','a','b','c'];
   const colors = {aplus:'var(--aplus)',a:'var(--a)',b:'var(--b)',c:'var(--c)'};
-  const avgs = {aplus:18.85,a:11.89,b:8.52,c:4.70};
 
   let html = `
   <div class="ph"><div class="ph-title">ВСЕ ПРОДАВЦЫ</div><span class="ph-tag tall">ПО ГРЕЙДАМ</span></div>
-  <div class="ph-sub">все ранжированные сотрудники · Q1 2026 · перформеры подсвечены</div>
+  <div class="ph-sub">все ранжированные сотрудники · перформеры подсвечены</div>
   <div class="stats" style="margin-bottom:18px;">
     <div class="stat sa"><div class="sn ca">${ALL_STAFF.aplus.length}</div><div class="sl">Сотрудников A+</div></div>
     <div class="stat saa"><div class="sn caa">${ALL_STAFF.a.length}</div><div class="sl">Сотрудников A</div></div>
@@ -609,18 +707,21 @@ function buildAllPanel() {
   </div>`;
 
   grades.forEach(g => {
-    const c = CFG[g], st = ALL_STATE[g];
+    const c = CFG[g];
     const total = ALL_STAFF[g].length;
-    const perfs = ALL_STAFF[g].filter(p=>p.p).length;
+    const perfs = ALL_STAFF[g].filter(p => isPerformer(p,g)).length;
+    const avg = PERF[g]?.avg_rev || 0;
+    const rdBlock = buildRDChips(g, ALL_STATE[g], 'all');
     html += `
     <div class="all-grade-section">
       <span style="color:${colors[g]}">ГРЕЙД ${LABEL[g]}</span>
-      <span class="all-grade-count">${total} чел. · ${perfs} перформеров · порог оборота ${avgs[g]} млн</span>
+      <span class="all-grade-count">${total} чел. · ${perfs} перформеров · порог оборота ${avg} млн</span>
       <div class="all-legend">
         <div class="legend-item"><div class="legend-dot" style="background:rgba(176,136,0,.5)"></div>Перформер</div>
         <div class="legend-item"><div class="legend-dot" style="background:rgba(224,112,0,.4)"></div>Почти</div>
       </div>
     </div>
+    ${rdBlock}
     <div id="all-chips-wrap-${g}">${buildAllChips(g)}</div>
     <div style="margin-bottom:6px;"><button class="reset-btn" onclick="resetAllFilters('${g}')">✕ Сброс</button></div>
     <div class="card" style="margin-bottom:24px;">
@@ -643,22 +744,332 @@ function onAllSearch(g, val) {
   document.getElementById('all-table-'+g).innerHTML = renderAllTable(g);
 }
 
+function allToggleRD(g, rd) {
+  ALL_STATE[g].selRD = ALL_STATE[g].selRD === rd ? null : rd;
+  if (ALL_STATE[g].selRD) {
+    const rdStores = RD_MAP[ALL_STATE[g].selRD] || [];
+    ALL_STATE[g].selStores = new Set(ALL_STAFF[g].map(p=>p.м).filter(m => rdStores.includes(m)));
+  } else {
+    ALL_STATE[g].selStores.clear();
+  }
+  document.getElementById('p-all').innerHTML = buildAllPanel();
+}
+
 function resetAllFilters(g) {
   ALL_STATE[g].selStores.clear();
+  ALL_STATE[g].selRD = null;
   ALL_STATE[g].search = '';
-  document.getElementById('all-chips-wrap-'+g).innerHTML = buildAllChips(g);
-  document.getElementById('all-table-'+g).innerHTML = renderAllTable(g);
-  const inp = document.querySelector(`#p-all #all-table-${g} input`);
-  if (inp) inp.value = '';
+  document.getElementById('p-all').innerHTML = buildAllPanel();
 }
 
 document.getElementById('p-all').innerHTML = buildAllPanel();
+
+function buildSettingsPanel() {
+  const grades = ['aplus','a','b','c'];
+  const colors = {aplus:'var(--aplus)',a:'var(--a)',b:'var(--b)',c:'var(--c)'};
+
+  const revRows = grades.map(g => {
+    const autoVal = (PERF[g]?.avg_rev ?? '—');
+    const manVal  = THRESHOLDS.revManual[g] ?? autoVal;
+    const isMan   = THRESHOLDS.revMode === 'manual';
+    return `<div class="preview-row">
+      <span class="preview-grade" style="color:${colors[g]}">ГРЕЙД ${LABEL[g]}</span>
+      <span class="preview-nums">
+        авто: <b>${autoVal} млн</b>
+        ${isMan ? `&nbsp;·&nbsp; вручную: <b>${manVal} млн</b>` : ''}
+        &nbsp;·&nbsp; сейчас: <b style="color:${colors[g]}">${getRevThreshold(g)} млн</b>
+      </span>
+    </div>`;
+  }).join('');
+
+  const manInputs = grades.map(g => {
+    const ph = PERF[g]?.avg_rev ?? 0;
+    const val = THRESHOLDS.revManual[g] ?? '';
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:1px;color:${colors[g]};width:40px">Грейд ${LABEL[g]}</span>
+      <input class="threshold-input" type="number" min="0" step="0.1"
+        placeholder="${ph}" value="${val}"
+        oninput="THRESHOLDS.revManual['${g}']=parseFloat(this.value)||null;updateSettingsPreview()">
+      <span class="threshold-unit">млн</span>
+      <span style="font-size:10px;color:var(--muted)">авто: ${ph} млн</span>
+    </div>`;
+  }).join('');
+
+  const perfPreview = grades.map(g => {
+    const total = ALL_STAFF[g]?.length || 0;
+    const perfs = ALL_STAFF[g]?.filter(p => isPerformer(p, g)).length || 0;
+    const near  = ALL_STAFF[g]?.filter(p => isNearMiss(p, g)).length || 0;
+    return `<div class="preview-row">
+      <span class="preview-grade" style="color:${colors[g]}">ГРЕЙД ${LABEL[g]}</span>
+      <span class="preview-nums">
+        перформеров: <b style="color:${colors[g]}">${perfs}</b> из ${total}
+        &nbsp;·&nbsp; почти: <b>${near}</b>
+      </span>
+    </div>`;
+  }).join('');
+
+  const isMan = THRESHOLDS.revMode === 'manual';
+
+  return `
+  <div class="ph"><div class="ph-title">НАСТРОЙКИ ПОРОГОВ</div></div>
+  <div class="ph-sub">изменения применяются мгновенно ко всем вкладкам</div>
+  <div class="settings-wrap">
+
+    <div class="settings-card">
+      <div class="settings-card-head">
+        <div class="settings-card-title">Пороги СБП и АТА</div>
+        <div class="settings-card-sub">Минимальные значения для попадания в перформеры</div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label">
+          <div class="settings-label-title">Доля СБП</div>
+          <div class="settings-label-desc">Текущий порог: <b>${THRESHOLDS.sbp}%</b></div>
+        </div>
+        <div class="settings-control">
+          <input class="threshold-input" id="inp-sbp" type="number" min="0" max="100" step="1"
+            value="${THRESHOLDS.sbp}"
+            oninput="THRESHOLDS.sbp=parseFloat(this.value)||0;updateSettingsPreview()">
+          <span class="threshold-unit">%</span>
+        </div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label">
+          <div class="settings-label-title">АТА</div>
+          <div class="settings-label-desc">Текущий порог: <b>${THRESHOLDS.ata}%</b></div>
+        </div>
+        <div class="settings-control">
+          <input class="threshold-input" id="inp-ata" type="number" min="0" max="100" step="1"
+            value="${THRESHOLDS.ata}"
+            oninput="THRESHOLDS.ata=parseFloat(this.value)||0;updateSettingsPreview()">
+          <span class="threshold-unit">%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-head">
+        <div class="settings-card-title">Порог оборота</div>
+        <div class="settings-card-sub">Авто = средний оборот по грейду из данных</div>
+      </div>
+      <div class="settings-row" style="flex-direction:column;align-items:flex-start;gap:10px">
+        <div class="radio-group">
+          <button class="radio-btn ${!isMan?'active':''}" onclick="setRevMode('auto')">Авто (средний)</button>
+          <button class="radio-btn ${isMan?'active':''}"  onclick="setRevMode('manual')">Вручную</button>
+        </div>
+        ${isMan ? `<div style="width:100%">${manInputs}</div>` : `<div class="settings-preview" style="width:100%">${revRows}</div>`}
+      </div>
+    </div>
+
+    <div class="settings-card">
+      <div class="settings-card-head">
+        <div class="settings-card-title">Предпросмотр</div>
+        <div class="settings-card-sub">Сколько перформеров при текущих порогах</div>
+      </div>
+      <div style="padding:14px 20px" id="settings-preview">${perfPreview}</div>
+    </div>
+
+    <button class="apply-btn" onclick="applyThresholds()">ПРИМЕНИТЬ КО ВСЕМ ВКЛАДКАМ</button>
+  </div>`;
+}
+
+function updateSettingsPreview() {
+  const el = document.getElementById('settings-preview');
+  if (!el) return;
+  const grades = ['aplus','a','b','c'];
+  const colors = {aplus:'var(--aplus)',a:'var(--a)',b:'var(--b)',c:'var(--c)'};
+  el.innerHTML = grades.map(g => {
+    const total = ALL_STAFF[g]?.length || 0;
+    const perfs = ALL_STAFF[g]?.filter(p => isPerformer(p, g)).length || 0;
+    const near  = ALL_STAFF[g]?.filter(p => isNearMiss(p, g)).length || 0;
+    return `<div class="preview-row">
+      <span class="preview-grade" style="color:${colors[g]}">ГРЕЙД ${LABEL[g]}</span>
+      <span class="preview-nums">
+        перформеров: <b style="color:${colors[g]}">${perfs}</b> из ${total}
+        &nbsp;·&nbsp; почти: <b>${near}</b>
+      </span>
+    </div>`;
+  }).join('');
+}
+
+function setRevMode(mode) {
+  THRESHOLDS.revMode = mode;
+  document.getElementById('p-settings').innerHTML = buildSettingsPanel();
+  updateSettingsPreview();
+}
+
+function applyThresholds() {
+  ['aplus','a','b','c'].forEach(g => {
+    document.getElementById('p-'+g).innerHTML = buildPanel(g);
+  });
+  document.getElementById('p-near').innerHTML = buildNearMiss();
+  document.getElementById('p-all').innerHTML  = buildAllPanel();
+  document.getElementById('p-hk').innerHTML   = buildHongkong();
+  const btn = document.querySelector('.apply-btn');
+  if (btn) { btn.textContent = '✓ ПРИМЕНЕНО'; setTimeout(()=>{ btn.textContent = 'ПРИМЕНИТЬ КО ВСЕМ ВКЛАДКАМ'; }, 1500); }
+}
+
+// ── MEDAL HELPER ──
+function medalBadge(p, g) {
+  if (!p.medal) return '';
+  const tier = p.medal.tier || 1;
+  const cls = tier === 1 ? 'medal medal-1' : 'medal medal-2';
+  const icon = tier === 1 ? '🏅' : '🎖';
+  return `<span class="${cls}"><span class="medal-icon">${icon}</span>${p.medal.label}</span>`;
+}
+
+// ── RD FILTER ──
+function buildRDChips(g, stateObj, prefix) {
+  const rds = Object.keys(RD_MAP);
+  if (!rds.length) return '';
+  const sel = stateObj.selRD;
+  const chips = rds.map(rd => {
+    const isActive = sel === rd;
+    return `<span class="rd-chip ${isActive?'selected':''}" onclick="${prefix}ToggleRD('${g}','${esc(rd)}')">${rd.split(' ')[0]}</span>`;
+  }).join('');
+  return `<div class="rd-wrap">
+    <div class="rd-label">Фильтр по РД${sel ? ' · ' + sel : ''}</div>
+    ${chips}
+  </div>`;
+}
+
+function gradeToggleRD(g, rd) {
+  STATE[g].selRD = STATE[g].selRD === rd ? null : rd;
+  // Apply RD filter: set selStores to RD's stores
+  if (STATE[g].selRD) {
+    const rdStores = RD_MAP[STATE[g].selRD] || [];
+    STATE[g].selStores = new Set(ALL_STAFF[g].map(p=>p.м).filter(m => rdStores.includes(m)));
+  } else {
+    STATE[g].selStores.clear();
+  }
+  refresh(g);
+}
+
+// ── ГОНКОНГ ──
+const HK_STATE = { search: '', selRD: null };
+
+function buildHongkong() {
+  const hk = HONGKONG;
+  const qualified = hk.filter(p => p.hk_perf);
+  const gradeColors = {aplus:'var(--aplus)',a:'var(--a)',b:'var(--b)',c:'var(--c)'};
+  const gradeTags   = {aplus:'A+',a:'A',b:'B',c:'C'};
+  const gradeCls    = {aplus:'ta',a:'taa',b:'tb',c:'tc'};
+
+  function renderHKTable() {
+    const st = HK_STATE;
+    let list = hk.filter(p => {
+      const ss = !st.search || p.н.toLowerCase().includes(st.search.toLowerCase());
+      const rs = !st.selRD || (RD_MAP[st.selRD]||[]).includes(p.м);
+      return ss && rs;
+    });
+    const shownQual = list.filter(p=>p.hk_perf).length;
+    const countHtml = `<span class="result-count">Показано: ${list.length} из ${hk.length} · квалифицировано: ${shownQual}</span>`;
+    const rows = list.map(p => {
+      const r = p.hk_rank;
+      const rkCls = r===1?'hk-r1':r===2?'hk-r2':r===3?'hk-r3':'';
+      return `<div class="hk-row ${p.hk_perf?'hk-perf':''}">
+        <div class="hk-rank-num ${rkCls}">${r}</div>
+        <div><div class="hk-name">${p.н}</div><div class="hk-store">${p.м}</div></div>
+        <div class="hk-val" style="color:var(--text)">${p.о.toFixed(1)} млн</div>
+        <div class="hk-val" style="${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
+        <div class="hk-val" style="${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
+        <div class="hk-val"><span class="hk-grade-badge ${gradeCls[p.g]}">${gradeTags[p.g]}</span></div>
+        <div class="hk-badge-wrap">${p.hk_perf ? '<span class="hk-perf-badge">★ Квалифицирован</span>' : ''}</div>
+      </div>`;
+    }).join('') || `<div class="no-results">Нет сотрудников</div>`;
+
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);flex-wrap:wrap;">
+      <div class="search-wrap" style="flex:1;min-width:140px">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="Поиск по имени..." value="${st.search}"
+          oninput="onHKSearch(this.value)" style="color:#c0392b">
+      </div>
+      ${countHtml}
+    </div>
+    <div class="hk-head"><div>#</div><div>Сотрудник</div><div>Оборот</div><div>СБП</div><div>АТА</div><div>Грейд</div><div>Статус</div></div>
+    ${rows}`;
+  }
+
+  const rdChips = Object.keys(RD_MAP).map(rd => {
+    const isActive = HK_STATE.selRD === rd;
+    return `<span class="rd-chip ${isActive?'selected':''}" onclick="hkToggleRD('${esc(rd)}')">${rd.split(' ')[0]}</span>`;
+  }).join('');
+
+  const rdBlock = rdChips ? `<div class="rd-wrap" style="margin-bottom:10px">
+    <div class="rd-label">Фильтр по РД${HK_STATE.selRD ? ' · ' + HK_STATE.selRD : ''}</div>
+    ${rdChips}
+  </div>` : '';
+
+  return `
+  <div class="ph"><div class="ph-title">ГОНКОНГ</div><span class="ph-tag" style="background:rgba(192,57,43,.10);color:#c0392b">ВСЕ БРЕНДЫ</span></div>
+  <div class="ph-sub">рейтинг всех продавцов · порог: СБП ≥ ${THRESHOLDS.sbp}%, АТА ≥ ${THRESHOLDS.ata}% · без порога оборота</div>
+  <div class="stats" style="margin-bottom:14px">
+    <div class="stat" style="position:relative;overflow:hidden"><div class="stat::before" style="background:#c0392b"></div>
+      <div class="sn" style="color:#c0392b">${hk.length}</div><div class="sl">Всего продавцов</div></div>
+    <div class="stat"><div class="sn" style="color:#c0392b">${qualified.length}</div><div class="sl">Квалифицировано</div></div>
+    <div class="stat"><div class="sn" style="color:var(--muted)">${THRESHOLDS.sbp}%</div><div class="sl">Порог СБП</div></div>
+    <div class="stat"><div class="sn" style="color:var(--muted)">${THRESHOLDS.ata}%</div><div class="sl">Порог АТА</div></div>
+  </div>
+  ${rdBlock}
+  <div class="card">
+    <div class="ch"><div class="ct" style="color:#c0392b">ОБЩИЙ РЕЙТИНГ · ${hk.length} ПРОДАВЦОВ</div>
+    <div style="display:flex;gap:4px"><button class="reset-btn" onclick="resetHKFilters()">✕ Сброс</button></div></div>
+    <div id="hk-table">${renderHKTable()}</div>
+  </div>`;
+}
+
+function onHKSearch(val) {
+  HK_STATE.search = val;
+  document.getElementById('hk-table').innerHTML = (() => {
+    const st = HK_STATE;
+    const hk = HONGKONG;
+    const gradeColors = {aplus:'var(--aplus)',a:'var(--a)',b:'var(--b)',c:'var(--c)'};
+    const gradeTags = {aplus:'A+',a:'A',b:'B',c:'C'};
+    const gradeCls  = {aplus:'ta',a:'taa',b:'tb',c:'tc'};
+    let list = hk.filter(p => {
+      const ss = !st.search || p.н.toLowerCase().includes(st.search.toLowerCase());
+      const rs = !st.selRD || (RD_MAP[st.selRD]||[]).includes(p.м);
+      return ss && rs;
+    });
+    const shownQual = list.filter(p=>p.hk_perf).length;
+    const countHtml = `<span class="result-count">Показано: ${list.length} из ${hk.length} · квалифицировано: ${shownQual}</span>`;
+    const rows = list.map(p => {
+      const r=p.hk_rank; const rkCls=r===1?'hk-r1':r===2?'hk-r2':r===3?'hk-r3':'';
+      return `<div class="hk-row ${p.hk_perf?'hk-perf':''}">
+        <div class="hk-rank-num ${rkCls}">${r}</div>
+        <div><div class="hk-name">${p.н}</div><div class="hk-store">${p.м}</div></div>
+        <div class="hk-val">${p.о.toFixed(1)} млн</div>
+        <div class="hk-val" style="${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
+        <div class="hk-val" style="${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
+        <div class="hk-val"><span class="hk-grade-badge ${gradeCls[p.g]}">${gradeTags[p.g]}</span></div>
+        <div class="hk-badge-wrap">${p.hk_perf?'<span class="hk-perf-badge">★ Квалифицирован</span>':''}</div>
+      </div>`;
+    }).join('')||`<div class="no-results">Нет сотрудников</div>`;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:6px 15px;border-bottom:1px solid var(--border);background:var(--surface2);flex-wrap:wrap;">
+      <div class="search-wrap" style="flex:1;min-width:140px"><span class="search-icon">🔍</span>
+        <input type="text" placeholder="Поиск по имени..." value="${st.search}" oninput="onHKSearch(this.value)" style="color:#c0392b"></div>
+      ${countHtml}</div>
+    <div class="hk-head"><div>#</div><div>Сотрудник</div><div>Оборот</div><div>СБП</div><div>АТА</div><div>Грейд</div><div>Статус</div></div>
+    ${rows}`;
+  })();
+}
+
+function hkToggleRD(rd) {
+  HK_STATE.selRD = HK_STATE.selRD === rd ? null : rd;
+  document.getElementById('p-hk').innerHTML = buildHongkong();
+}
+
+function resetHKFilters() {
+  HK_STATE.search = ''; HK_STATE.selRD = null;
+  document.getElementById('p-hk').innerHTML = buildHongkong();
+}
 
 function showTab(g, btn) {
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
   document.getElementById('p-'+g).classList.add('active');
   btn.classList.add('active');
+  if (g === 'settings') document.getElementById('p-settings').innerHTML = buildSettingsPanel();
+  if (g === 'hk') document.getElementById('p-hk').innerHTML = buildHongkong();
 }
 </script>
 </body>
