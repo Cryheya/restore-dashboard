@@ -10,16 +10,18 @@ set -euo pipefail
 # Usage examples:
 #   ./update_dashboard.sh
 #   ./update_dashboard.sh --quarter "Q2 2026"
+#   ./update_dashboard.sh --auto-quarter
 #   ./update_dashboard.sh --with-index
 #   ./update_dashboard.sh --quarter "Q2 2026" --with-index --message "Update Q2 2026"
 
-SOURCE_DIR="/Users/nedin/Desktop/restore-dashboard"
+SOURCE_DIR="/Users/nedin/Library/Mobile Documents/com~apple~CloudDocs/!W/!обмен/!restore_perf"
 REPO_DIR="$(cd "$(dirname "$0")" && pwd)"
 EXCEL_FILE="Перформеры_re.xlsx"
 
 WITH_INDEX=0
 QUARTER=""
 COMMIT_MESSAGE=""
+AUTO_QUARTER=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -35,12 +37,32 @@ while [[ $# -gt 0 ]]; do
       COMMIT_MESSAGE="${2:-}"
       shift 2
       ;;
+    --auto-quarter)
+      AUTO_QUARTER=1
+      shift
+      ;;
     *)
       echo "Unknown argument: $1"
       exit 1
       ;;
   esac
 done
+
+if [[ "$AUTO_QUARTER" -eq 1 && -z "$QUARTER" ]]; then
+  year="$(date +%Y)"
+  month="$(date +%m)"
+  if [[ "$month" -ge 1 && "$month" -le 3 ]]; then
+    q="Q1"
+  elif [[ "$month" -ge 4 && "$month" -le 6 ]]; then
+    q="Q2"
+  elif [[ "$month" -ge 7 && "$month" -le 9 ]]; then
+    q="Q3"
+  else
+    q="Q4"
+  fi
+  QUARTER="${q} ${year}"
+  echo "==> Auto quarter: $QUARTER"
+fi
 
 if [[ ! -f "$SOURCE_DIR/generate_data.py" ]]; then
   echo "generate_data.py not found: $SOURCE_DIR/generate_data.py"
