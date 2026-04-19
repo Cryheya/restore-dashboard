@@ -582,7 +582,7 @@ function buildNearMiss() {
 
 
 // ── LOAD DATA FROM data.json ──
-let PERF={}, STORES={}, NEAR={}, ALL_STAFF={};
+let PERF={}, STORES={}, NEAR={}, ALL_STAFF={aplus:[],a:[],b:[],c:[]};
 let TOTAL={aplus:0,a:0,b:0,c:0};
 let HONGKONG=[], RD_MAP={}, MEDAL_TIERS={};
 
@@ -623,7 +623,7 @@ async function loadData() {
   }
   document.getElementById('loading').style.display = 'none';
 }
-loadData();
+// Start data loading after all constants/functions below are initialized.
 const ALL_STATE = {
   aplus: { selStores: new Set(), selRD: null, search: '' },
   a:     { selStores: new Set(), selRD: null, search: '' },
@@ -1071,6 +1071,7 @@ function showTab(g, btn) {
   if (g === 'settings') document.getElementById('p-settings').innerHTML = buildSettingsPanel();
   if (g === 'hk') document.getElementById('p-hk').innerHTML = buildHongkong();
 }
+loadData();
 </script>
 </body>
 </html>
