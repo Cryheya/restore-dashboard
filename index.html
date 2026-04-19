@@ -80,9 +80,9 @@
   .rd-chip.selected{background:var(--text);color:#fff;border-color:var(--text);}
 
   /* ГОНКОНГ TABLE */
-  .hk-head{display:grid;grid-template-columns:36px 1fr 80px 68px 68px 68px 90px;gap:6px;padding:7px 16px;border-bottom:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
+  .hk-head{display:grid;grid-template-columns:36px 1fr 80px 58px 58px 110px 52px 54px 90px;gap:6px;padding:7px 16px;border-bottom:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;}
   .hk-head div:not(:nth-child(2)){text-align:right;}
-  .hk-row{display:grid;grid-template-columns:36px 1fr 80px 68px 68px 68px 90px;align-items:center;gap:6px;padding:7px 16px;border-bottom:1px solid var(--border);transition:background .1s;}
+  .hk-row{display:grid;grid-template-columns:36px 1fr 80px 58px 58px 110px 52px 54px 90px;align-items:center;gap:6px;padding:7px 16px;border-bottom:1px solid var(--border);transition:background .1s;}
   .hk-row:last-child{border-bottom:none;}
   .hk-row:hover{background:var(--surface2);}
   .hk-row.hk-perf{background:rgba(192,57,43,.04);}
@@ -968,6 +968,8 @@ function buildHongkong() {
         <div class="hk-val" style="color:var(--text)">${p.о.toFixed(1)} млн</div>
         <div class="hk-val" style="${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
         <div class="hk-val" style="${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
+        <div class="hk-val" style="color:var(--muted)">О:${p.hk_rank_o ?? '—'} · С:${p.hk_rank_s ?? '—'} · А:${p.hk_rank_a ?? '—'}</div>
+        <div class="hk-val" style="font-weight:800;color:var(--text)">${p.hk_rank_sum ?? '—'}</div>
         <div class="hk-val"><span class="hk-grade-badge ${gradeCls[p.g]}">${gradeTags[p.g]}</span></div>
         <div class="hk-badge-wrap">${p.hk_perf ? '<span class="hk-perf-badge">★ Квалифицирован</span>' : ''}</div>
       </div>`;
@@ -981,7 +983,7 @@ function buildHongkong() {
       </div>
       ${countHtml}
     </div>
-    <div class="hk-head"><div>#</div><div>Сотрудник</div><div>Оборот</div><div>СБП</div><div>АТА</div><div>Грейд</div><div>Статус</div></div>
+    <div class="hk-head"><div>#</div><div>Сотрудник</div><div>Оборот</div><div>СБП</div><div>АТА</div><div>Места O/C/A</div><div>Σ</div><div>Грейд</div><div>Статус</div></div>
     ${rows}`;
   }
 
@@ -1036,6 +1038,8 @@ function onHKSearch(val) {
         <div class="hk-val">${p.о.toFixed(1)} млн</div>
         <div class="hk-val" style="${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
         <div class="hk-val" style="${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
+        <div class="hk-val" style="color:var(--muted)">О:${p.hk_rank_o ?? '—'} · С:${p.hk_rank_s ?? '—'} · А:${p.hk_rank_a ?? '—'}</div>
+        <div class="hk-val" style="font-weight:800;color:var(--text)">${p.hk_rank_sum ?? '—'}</div>
         <div class="hk-val"><span class="hk-grade-badge ${gradeCls[p.g]}">${gradeTags[p.g]}</span></div>
         <div class="hk-badge-wrap">${p.hk_perf?'<span class="hk-perf-badge">★ Квалифицирован</span>':''}</div>
       </div>`;
@@ -1044,7 +1048,7 @@ function onHKSearch(val) {
       <div class="search-wrap" style="flex:1;min-width:140px"><span class="search-icon">🔍</span>
         <input type="text" placeholder="Поиск по имени..." value="${st.search}" oninput="onHKSearch(this.value)" style="color:#c0392b"></div>
       ${countHtml}</div>
-    <div class="hk-head"><div>#</div><div>Сотрудник</div><div>Оборот</div><div>СБП</div><div>АТА</div><div>Грейд</div><div>Статус</div></div>
+    <div class="hk-head"><div>#</div><div>Сотрудник</div><div>Оборот</div><div>СБП</div><div>АТА</div><div>Места O/C/A</div><div>Σ</div><div>Грейд</div><div>Статус</div></div>
     ${rows}`;
   })();
   restoreSearchFocus('hk-table', val);
