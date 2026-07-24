@@ -247,13 +247,78 @@
   .export-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:1px solid var(--border);border-radius:5px;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s;white-space:nowrap;}
   .export-btn:hover{border-color:#1a7a3a;color:#1a7a3a;background:rgba(26,122,58,.05);}
   .export-btn svg{flex-shrink:0;}
+  /* ── PRIZE PROGRAM — shimmer animations ── */
+  @keyframes prize-sweep {
+    0%   { left: -70%; }
+    60%  { left: 120%; }
+    100% { left: 120%; }
+  }
+  @keyframes prize-sweep-fast {
+    0%   { left: -70%; }
+    50%  { left: 120%; }
+    100% { left: 120%; }
+  }
+  /* все призовые строки: overflow hidden для ::after */
+  .pr.prize-t1, .pr.prize-t2 { position: relative; overflow: hidden; }
+
+  /* Tier 2 — призовые места (мягкий перелив) */
+  .pr.prize-t2 { background: rgba(176,136,0,.03); }
+  .pr.prize-t2::after {
+    content: '';
+    position: absolute; top: 0; left: -70%; width: 55%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(176,136,0,.13), transparent);
+    animation: prize-sweep 3s ease-in-out infinite;
+    pointer-events: none;
+  }
+  /* Tier 1 — топ-перформеры (яркий перелив) */
+  .pr.prize-t1 { background: rgba(176,136,0,.06); }
+  .pr.prize-t1::after {
+    content: '';
+    position: absolute; top: 0; left: -70%; width: 55%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(176,136,0,.28), transparent);
+    animation: prize-sweep-fast 2s ease-in-out infinite;
+    pointer-events: none;
+  }
+  /* Prize badges */
+  .prize-badge { display:inline-flex;align-items:center;font-size:8px;font-weight:800;
+    letter-spacing:.3px;padding:2px 7px;border-radius:3px;vertical-align:middle;margin-left:4px; }
+  .prize-badge-1 { background:rgba(176,136,0,.18);color:#7a5c00;border:1px solid rgba(176,136,0,.35); }
+  .prize-badge-2 { background:rgba(176,136,0,.09);color:#9a7a20;border:1px solid rgba(176,136,0,.20); }
+
+  /* ── VIEW TOGGLE ── */
+  .view-toggle{padding:5px 11px;border:1px solid var(--border);border-radius:5px;font-size:13px;background:var(--surface);color:var(--muted);cursor:pointer;transition:all .15s;user-select:none;margin-left:10px;}
+  .view-toggle:hover{border-color:var(--muted);background:var(--surface2);}
+  /* COMPACT / MOBILE MODE */
+  body.compact .main{padding:8px 8px 24px;max-width:100%;}
+  body.compact .hdr{padding:10px 14px;}
+  body.compact .logo{font-size:18px;}
+  body.compact .tabs{padding:0 6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+  body.compact .tabs::-webkit-scrollbar{display:none;}
+  body.compact .tab{font-size:8.5px;padding:8px 9px;white-space:nowrap;}
+  body.compact .stats{grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:10px;}
+  body.compact .stat{padding:9px 10px;}
+  body.compact .sn{font-size:20px;}
+  body.compact .tgrid{grid-template-columns:1fr;}
+  body.compact .card{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  body.compact .filters-row{grid-template-columns:1fr;}
+  body.compact .rd-wrap,body.compact .chips-wrap,body.compact .all-chips-wrap{padding:6px 8px;}
+  body.compact .ph-sub{font-size:8px;}
+  body.compact .hk-head,body.compact .hk-row{font-size:8.5px;padding:5px 8px;}
+  body.compact .perf-head,body.compact .pr{font-size:9px;padding:5px 8px;}
+  body.compact .nm-head,body.compact .nm-row{font-size:8.5px;padding:5px 8px;}
+  body.compact .all-head,body.compact .all-row{font-size:8.5px;padding:4px 8px;}
+  body.compact .store-head,body.compact .sr{font-size:8.5px;padding:5px 8px;}
+  body.compact .search-wrap input{font-size:12px;padding:8px 10px 8px 28px;}
 </style>
 </head>
 <body>
 
 <div class="hdr">
   <div><div class="logo">RESTORE</div><div class="logo-sub">ЭЛЕКТРОНИКА</div></div>
-  <div><div class="hdr-period" id="hdr-q">...</div><div class="hdr-sub">Загрузка данных...</div></div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div><div class="hdr-period" id="hdr-q">...</div><div class="hdr-sub">Загрузка данных...</div></div>
+    <button class="view-toggle" id="view-toggle-btn" onclick="toggleView()" title="Переключить вид">🖥</button>
+  </div>
 </div>
 
 <div class="tabs">
@@ -306,6 +371,15 @@ const THRESHOLDS = {
   revManual: {},   // {aplus: 20, a: 12, b: 9, c: 5} — заполняется вручную
 };
 
+// ── PRIZE PROGRAM (Программа признания) ──
+// tier1 — первая зона (повышенная выплата), total — все призовые места
+const PRIZE_CFG = {
+  aplus: { total: 20, tier1: 10, prize1: 40000, prize2: 30000 },
+  a:     { total: 15, tier1: 15, prize1: 15000, prize2: 0     },
+  b:     { total: 20, tier1: 20, prize1: 10000, prize2: 0     },
+  c:     { total:  5, tier1:  5, prize1:  5000, prize2: 0     },
+};
+
 function getRevThreshold(g) {
   if (THRESHOLDS.revMode === 'manual' && THRESHOLDS.revManual[g] != null) {
     return THRESHOLDS.revManual[g];
@@ -341,6 +415,7 @@ function sortArr(arr, key, dir) {
   });
 }
 function esc(s){ return String(s).replace(/'/g,"\\'"); }
+function sn(full){ const p=(full||'').trim().split(/\s+/); return p.length>=2?p[0]+' '+p[1]:full; }
 function restoreSearchFocus(containerId, value) {
   const root = document.getElementById(containerId);
   if (!root) return;
@@ -390,17 +465,36 @@ function renderPerf(g) {
   const shown = list.length, totalCount = ALL_STAFF[g].length;
   const countHtml = `<span class="result-count">Показано: ${shown} из ${totalCount} · перформеров: ${perfCount}</span>`;
 
+  // Призовые позиции — по всему грейду, независимо от фильтра
+  const pcfg = PRIZE_CFG[g] || {};
+  const allPerfsRanked = (ALL_STAFF[g] || []).filter(p => isPerformer(p,g)).sort((a,b) => a.р - b.р);
+  const perfPosMap = new Map(allPerfsRanked.map((p,i) => [p.н, i+1]));
+
   const rows = list.length === 0
     ? `<div class="no-results">Нет сотрудников по выбранному фильтру</div>`
     : list.map(p => {
         const perf = isPerformer(p, g);
         const near = !perf && isNearMiss(p, g);
-        const rowCls = perf ? 'is-perf' : near ? 'is-near' : '';
+
+        // Призовой уровень
+        let prizeTier = 0, prizeAmt = 0;
+        if (perf && pcfg.total) {
+          const pos = perfPosMap.get(p.н) || 999;
+          if (pos <= pcfg.total) {
+            prizeTier = pos <= (pcfg.tier1 || pcfg.total) ? 1 : 2;
+            prizeAmt  = prizeTier === 1 ? pcfg.prize1 : pcfg.prize2;
+          }
+        }
+
+        const rowCls = [perf?'is-perf':near?'is-near':'', prizeTier>0?'prize-t'+prizeTier:''].filter(Boolean).join(' ');
         const badge = perf ? `<span class="badge-perf">★</span>` : near ? `<span class="badge-near">↑</span>` : '';
         const medal = perf ? medalBadge(p, g) : '';
+        const prizeBadge = prizeTier > 0
+          ? `<span class="prize-badge prize-badge-${prizeTier}">${prizeAmt>=1000?(prizeAmt/1000|0)+'К':prizeAmt} ₽</span>`
+          : '';
         return `<div class="pr ${rowCls}" style="${perf?'border-left:3px solid '+c.colHex+';padding-left:13px':''}">
           ${rk(p.р)}
-          <div><div class="pn">${p.н} ${badge}${medal}</div><div class="ps">${p.м}</div></div>
+          <div><div class="pn">${sn(p.н)} ${badge}${medal}${prizeBadge}</div><div class="ps">${p.м}</div></div>
           <div class="pv"><span class="v" style="color:${c.col}">${p.о.toFixed(1)} млн</span><span class="l">Оборот</span></div>
           <div class="pv"><span class="v" style="${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</span><span class="l">СБП</span></div>
           <div class="pv"><span class="v" style="${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</span><span class="l">АТА</span></div>
@@ -463,20 +557,22 @@ function hexToRgb(hex) {
 
 // ── FULL PANEL BUILD (first time) ──
 function buildPanel(g) {
-  const c = CFG[g], {avg_rev} = PERF[g], total = TOTAL[g];
+  const c = CFG[g], total = TOTAL[g];
+  const rev_thr = getRevThreshold(g);
   const staff = ALL_STAFF[g] || [];
   const perfCount = staff.filter(p => isPerformer(p,g)).length;
+  const perfPct = staff.length ? Math.round(perfCount / staff.length * 100) : 0;
   const avgS = staff.length ? (staff.reduce((s,p)=>s+p.с,0)/staff.length).toFixed(1) : '—';
   const storeNote = g==='b'?`топ-10 из ${total}`:`все ${total} магазина`;
   const rdBlock = buildRDChips(g, STATE[g], 'grade');
 
   return `
   <div class="ph"><div class="ph-title">СОТРУДНИКИ ГРЕЙДА</div><span class="ph-tag ${c.tag}">ГРЕЙД ${LABEL[g]}</span></div>
-  <div class="ph-sub">${total} магазинов · порог оборота ${avg_rev} млн · перформеры подсвечены</div>
+  <div class="ph-sub">${total} магазинов · порог оборота ${rev_thr} млн · перформеры подсвечены</div>
   <div class="stats">
     <div class="stat ${c.st}"><div class="sn ${c.cc}">${staff.length}</div><div class="sl">Всего сотрудников</div></div>
-    <div class="stat ${c.st}"><div class="sn ${c.cc}">${perfCount}</div><div class="sl">Перформеров</div></div>
-    <div class="stat ${c.st}"><div class="sn ${c.cc}">${avg_rev} М</div><div class="sl">Порог оборота</div></div>
+    <div class="stat ${c.st}"><div class="sn ${c.cc}">${perfCount}</div><div class="sl">Перформеров</div><div class="sl" style="font-size:10px;opacity:.65;margin-top:2px;">${perfPct}% от состава</div></div>
+    <div class="stat ${c.st}"><div class="sn ${c.cc}">${rev_thr} М</div><div class="sl">Порог оборота</div></div>
     <div class="stat ${c.st}"><div class="sn ${c.cc}">${avgS}%</div><div class="sl">Средний СБП</div></div>
   </div>
 
@@ -571,7 +667,7 @@ function buildNearMiss() {
       const thr=fS?'40%':fA?'60%':`${avg_rev} млн`;
       const act=fS?p.с.toFixed(1)+'%':fA?p.а.toFixed(1)+'%':p.о.toFixed(1)+' млн';
       html+=`<div class="nm-row">
-        <div><div class="nm-name">${p.н}</div><div class="nm-store">${p.м}</div></div>
+        <div><div class="nm-name">${sn(p.н)}</div><div class="nm-store">${p.м}</div></div>
         <div class="nm-val">${p.о.toFixed(1)} млн</div>
         <div class="nm-val ${fS?'fail':''}">${p.с.toFixed(1)}%</div>
         <div class="nm-val ${fA?'fail':''}">${p.а.toFixed(1)}%</div>
@@ -587,7 +683,7 @@ function buildNearMiss() {
 // ── LOAD DATA FROM data.json ──
 let PERF={}, STORES={}, NEAR={}, ALL_STAFF={aplus:[],a:[],b:[],c:[]};
 let TOTAL={aplus:0,a:0,b:0,c:0};
-let HONGKONG=[], RD_MAP={}, MEDAL_TIERS={};
+let HONGKONG=[], RD_MAP={}, MEDAL_TIERS={}, HK_PERIOD='';
 
 async function loadData() {
   try {
@@ -605,6 +701,7 @@ async function loadData() {
     const period  = d.period  || '';
     TOTAL = d.total_stores || TOTAL;
     HONGKONG = d.hongkong || [];
+    HK_PERIOD = d.hk_period || '';
     RD_MAP = d.rd_map || {};
     MEDAL_TIERS = d.medal_tiers || {};
     ['aplus','a','b','c'].forEach(g => {
@@ -682,7 +779,7 @@ function renderAllTable(g) {
       : near ? `<span class="badge-near">↑ Почти</span>` : `<span class="badge-none">—</span>`;
     return `<div class="all-row ${perf?'is-perf':near?'is-near':''}">
       <div class="all-rank">${p.р}</div>
-      <div><div class="all-name">${p.н}</div><div class="all-store">${p.м}</div></div>
+      <div><div class="all-name">${sn(p.н)}</div><div class="all-store">${p.м}</div></div>
       <div class="all-val" style="color:${c.colHex};text-align:right">${p.о.toFixed(1)} млн</div>
       <div class="all-val" style="text-align:right;${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
       <div class="all-val" style="text-align:right;${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
@@ -725,7 +822,7 @@ function buildAllPanel() {
     const c = CFG[g];
     const total = ALL_STAFF[g].length;
     const perfs = ALL_STAFF[g].filter(p => isPerformer(p,g)).length;
-    const avg = PERF[g]?.avg_rev || 0;
+    const avg = getRevThreshold(g);
     const rdBlock = buildRDChips(g, ALL_STATE[g], 'all');
     html += `
     <div class="all-grade-section">
@@ -912,6 +1009,12 @@ function setRevMode(mode) {
   updateSettingsPreview();
 }
 
+function toggleView() {
+  const compact = document.body.classList.toggle('compact');
+  document.getElementById('view-toggle-btn').textContent = compact ? '📱' : '🖥';
+  localStorage.setItem('irg_compact', compact ? '1' : '0');
+}
+
 function applyThresholds() {
   ['aplus','a','b','c'].forEach(g => {
     document.getElementById('p-'+g).innerHTML = buildPanel(g);
@@ -1076,7 +1179,7 @@ function buildHongkong() {
       const rkCls = r===1?'hk-r1':r===2?'hk-r2':r===3?'hk-r3':'';
       return `<div class="hk-row ${p.hk_perf?'hk-perf':''}">
         <div class="hk-rank-num ${rkCls}">${r}</div>
-        <div><div class="hk-name">${p.н}</div><div class="hk-store">${p.м}</div></div>
+        <div><div class="hk-name">${sn(p.н)}</div><div class="hk-store">${p.м}</div></div>
         <div class="hk-val" style="color:var(--text)">${p.о.toFixed(1)} млн</div>
         <div class="hk-val" style="${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
         <div class="hk-val" style="${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
@@ -1111,7 +1214,7 @@ function buildHongkong() {
 
   return `
   <div class="ph"><div class="ph-title">ГОНКОНГ</div><span class="ph-tag" style="background:rgba(192,57,43,.10);color:#c0392b">ВСЕ БРЕНДЫ</span></div>
-  <div class="ph-sub">рейтинг всех продавцов · порог: СБП ≥ ${THRESHOLDS.sbp}%, АТА ≥ ${THRESHOLDS.ata}% · без порога оборота</div>
+  <div class="ph-sub">рейтинг всех продавцов · порог: СБП ≥ ${THRESHOLDS.sbp}%, АТА ≥ ${THRESHOLDS.ata}% · без порога оборота${HK_PERIOD ? ' · период: ' + HK_PERIOD : ''}</div>
   <div class="stats" style="margin-bottom:14px">
     <div class="stat" style="position:relative;overflow:hidden"><div class="stat::before" style="background:#c0392b"></div>
       <div class="sn" style="color:#c0392b">${hk.length}</div><div class="sl">Всего продавцов</div></div>
@@ -1149,7 +1252,7 @@ function onHKSearch(val) {
       const r=p.hk_rank; const rkCls=r===1?'hk-r1':r===2?'hk-r2':r===3?'hk-r3':'';
       return `<div class="hk-row ${p.hk_perf?'hk-perf':''}">
         <div class="hk-rank-num ${rkCls}">${r}</div>
-        <div><div class="hk-name">${p.н}</div><div class="hk-store">${p.м}</div></div>
+        <div><div class="hk-name">${sn(p.н)}</div><div class="hk-store">${p.м}</div></div>
         <div class="hk-val">${p.о.toFixed(1)} млн</div>
         <div class="hk-val" style="${p.с<THRESHOLDS.sbp?'color:var(--c)':''}">${p.с.toFixed(1)}%</div>
         <div class="hk-val" style="${p.а<THRESHOLDS.ata?'color:var(--c)':''}">${p.а.toFixed(1)}%</div>
@@ -1188,6 +1291,12 @@ function showTab(g, btn) {
   if (g === 'hk') document.getElementById('p-hk').innerHTML = buildHongkong();
 }
 loadData();
+// Restore compact mode preference
+if (localStorage.getItem('irg_compact') === '1') {
+  document.body.classList.add('compact');
+  const btn = document.getElementById('view-toggle-btn');
+  if (btn) btn.textContent = '📱';
+}
 </script>
 </body>
 </html>
